@@ -1,0 +1,125 @@
+%YAML 1.2
+---
+
+name: CMScript
+file_extensions: 
+  - cms
+scope: source.cmscript
+
+variables:
+  ident: '[a-z_][A-Za-z_0-9]*'
+  type: '[A-Z][A-Za-z_0-9]*'
+  number: '-?((\d+(\.\d+)|\.\d+)|(0x([0-9A-Fa-f]+))|(\d+))'
+  float: '-?(\d+(\.\d+)|\.\d+)'
+  space: \s+
+
+contexts:
+
+  prototype:
+    - include: macros
+    - include: comments
+
+  main:
+    - match: '({{ident}})({{space}})(=)'
+      captures:
+        1: entity.assignment.cms
+    - match: \b(define|call|return|function|goto|if|ifnot|while|else|elif|Null|global|LastResult)\b
+      scope: keyword.cms
+    - match: '\b({{type}})\:'
+      scope: keyword.parameter.cms
+    - match: \b(YES|Yes|True|TRUE)\b
+      scope: constant.boolean.true.cms
+    - match: \b(NO|No|False|FALSE)\b
+      scope: constant.boolean.false.cms
+    - match: '\b(assign)({{space}})({{ident}})\b'
+      captures:
+        1: keyword.cms
+        3: entity.assignment.cms
+    - match: (<)({{space}})?({{float}})({{space}})({{float}})({{space}})({{float}})({{space}})?(>)
+      scope: constant.numeric.cms
+    - match: '\b{{number}}\b'
+      scope: constant.numeric.cms
+    - match: '"'
+      push: string
+    - match: '\$:'
+      push: string_macro
+    - match: '\b({{type}})\.'
+      scope: constant.object.cms
+    - match: \b({{ident}}\.)({{type}}\.)
+      captures:
+        1: entity.callstd.cms
+        2: constant.object.cms
+    - match: '\b{{ident}}\.'
+      captures:
+        0: entity.callstd.cms
+    - match: '\b({{type}})\(({{number}})\)'
+      scope: constant.numeric.cms
+    - match: '\b({{type}})'
+      scope: constant.macro.cms
+
+  string_macro:
+    - meta_scope: constant.macro.string.cms
+    - match: ':'
+      pop: true
+
+  string:
+    - meta_include_prototype: false
+    - meta_scope: string.quoted.double.cms
+    - match: '\['
+      push: string_escapes
+    - match: '{'
+      push: string_escape_params
+    - match: '"'
+      pop: true
+
+  string_escapes:
+    - meta_include_prototype: false
+    - meta_scope: string.escape.cms
+    - match: '\]'
+      pop: true
+
+
+  string_escape_params:
+    - meta_include_prototype: false
+    - meta_scope: string.escape.param.cms
+    - match: '}'
+      pop: true
+
+  macros:
+    - match: '#[A-Za-z_0-9\-]+\.'
+      scope: constant.macro.cms
+    - match: '#\b([A-Za-z_0-9\-$]+)\b'
+      scope: constant.macro.cms
+    - match: '\+\+\b({{type}})\b'
+      scope: constant.object.cms
+    - match: '@\b({{ident}})\b'
+      scope: constant.location.cms
+    - match: '&\b({{type}}\.{{ident}})\b'
+      scope: constant.functionmacro.cms
+    - match: '&\b({{type}}\.{{number}})\b'
+      scope: constant.functionmacro.cms
+    - match: '&\b({{ident}})\b'
+      scope: constant.functionmacro.cms
+
+  comments:
+    - match: '//'
+      push: comment
+    - match: '/\*'
+      push: commentMultiLine
+
+  comment:
+    - meta_include_prototype: false
+    - meta_scope: comment.line.cms
+    - match: '\n'
+      pop: true
+
+  commentMultiLine:
+    - meta_include_prototype: false
+    - meta_scope: comment.block.cms
+    - match: '\*/'
+      pop: true
+
+
+
+
+
