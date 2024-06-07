@@ -67,21 +67,72 @@ class GSStringTests: XCTestCase {
         XCTAssertEqual(sut4.string(format: .gs), "{03}")
     }
     
-    func testBold() {
-        let sut: GSString = GSString(string: "{Bold}", format: .gsColo)
-        let sut2: GSString = GSString(string: "{Bold}", format: .gsXD)
-        let sut3: GSString = GSString(string: "{Bold}", format: .gs)
+    func testFontBold() {
+        let sut: GSString = GSString(string: "{Font Bold}", format: .gsColo)
+        let sut2: GSString = GSString(string: "{Font Bold}", format: .gsXD)
+        let sut3: GSString = GSString(string: "{Font Bold}", format: .gs)
         XCTAssertEqual(sut.rawData.rawBytes, [0xFF, 0xFF, 0x07, 0x01])
         XCTAssertEqual(sut2.rawData.rawBytes, [0xFF, 0xFF, 0x07, 0x01])
-        XCTAssertEqual(sut.string(format: .gsColo), "{Bold}")
-        XCTAssertEqual(sut2.string(format: .gsXD), "{Bold}")
+        XCTAssertEqual(sut.string(format: .gsColo), "{Font Bold}")
+        XCTAssertEqual(sut2.string(format: .gsXD), "{Font Bold}")
         XCTAssertEqual(sut3.string(format: .gs), "")
         
         let sut4 = GSString(characters: [.special([0x07, 0x01])])
         XCTAssertEqual(sut4.rawData.rawBytes, [0xFF, 0xFF, 0x07, 0x01])
-        XCTAssertEqual(sut4.string(format: .gsColo), "{Bold}")
-        XCTAssertEqual(sut4.string(format: .gsXD), "{Bold}")
+        XCTAssertEqual(sut4.string(format: .gsColo), "{Font Bold}")
+        XCTAssertEqual(sut4.string(format: .gsXD), "{Font Bold}")
         XCTAssertEqual(sut4.string(format: .gs), "{07 01}")
+    }
+    
+    func testFontRegular() {
+        let sut: GSString = GSString(string: "{Font Regular}", format: .gsColo)
+        let sut2: GSString = GSString(string: "{Font Regular}", format: .gsXD)
+        let sut3: GSString = GSString(string: "{Font Regular}", format: .gs)
+        XCTAssertEqual(sut.rawData.rawBytes, [0xFF, 0xFF, 0x07, 0x03])
+        XCTAssertEqual(sut2.rawData.rawBytes, [0xFF, 0xFF, 0x07, 0x03])
+        XCTAssertEqual(sut.string(format: .gsColo), "{Font Regular}")
+        XCTAssertEqual(sut2.string(format: .gsXD), "{Font Regular}")
+        XCTAssertEqual(sut3.string(format: .gs), "")
+        
+        let sut4 = GSString(characters: [.special([0x07, 0x03])])
+        XCTAssertEqual(sut4.rawData.rawBytes, [0xFF, 0xFF, 0x07, 0x03])
+        XCTAssertEqual(sut4.string(format: .gsColo), "{Font Regular}")
+        XCTAssertEqual(sut4.string(format: .gsXD), "{Font Regular}")
+        XCTAssertEqual(sut4.string(format: .gs), "{07 03}")
+    }
+    
+    func testFontSuperscript1() {
+        let sut: GSString = GSString(string: "{Font Super 1}", format: .gsColo)
+        let sut2: GSString = GSString(string: "{Font Super 1}", format: .gsXD)
+        let sut3: GSString = GSString(string: "{Font Super 1}", format: .gs)
+        XCTAssertEqual(sut.rawData.rawBytes, [0xFF, 0xFF, 0x07, 0x02])
+        XCTAssertEqual(sut2.rawData.rawBytes, [0xFF, 0xFF, 0x07, 0x02])
+        XCTAssertEqual(sut.string(format: .gsColo), "{Font Super 1}")
+        XCTAssertEqual(sut2.string(format: .gsXD), "{Font Super 1}")
+        XCTAssertEqual(sut3.string(format: .gs), "")
+        
+        let sut4 = GSString(characters: [.special([0x07, 0x02])])
+        XCTAssertEqual(sut4.rawData.rawBytes, [0xFF, 0xFF, 0x07, 0x02])
+        XCTAssertEqual(sut4.string(format: .gsColo), "{Font Super 1}")
+        XCTAssertEqual(sut4.string(format: .gsXD), "{Font Super 1}")
+        XCTAssertEqual(sut4.string(format: .gs), "{07 02}")
+    }
+    
+    func testFontSuperscript2() {
+        let sut: GSString = GSString(string: "{Font Super 2}", format: .gsColo)
+        let sut2: GSString = GSString(string: "{Font Super 2}", format: .gsXD)
+        let sut3: GSString = GSString(string: "{Font Super 2}", format: .gs)
+        XCTAssertEqual(sut.rawData.rawBytes, [0xFF, 0xFF, 0x07, 0x04])
+        XCTAssertEqual(sut2.rawData.rawBytes, [0xFF, 0xFF, 0x07, 0x04])
+        XCTAssertEqual(sut.string(format: .gsColo), "{Font Super 2}")
+        XCTAssertEqual(sut2.string(format: .gsXD), "{Font Super 2}")
+        XCTAssertEqual(sut3.string(format: .gs), "")
+        
+        let sut4 = GSString(characters: [.special([0x07, 0x04])])
+        XCTAssertEqual(sut4.rawData.rawBytes, [0xFF, 0xFF, 0x07, 0x04])
+        XCTAssertEqual(sut4.string(format: .gsColo), "{Font Super 2}")
+        XCTAssertEqual(sut4.string(format: .gsXD), "{Font Super 2}")
+        XCTAssertEqual(sut4.string(format: .gs), "{07 04}")
     }
     
     func testColor() {

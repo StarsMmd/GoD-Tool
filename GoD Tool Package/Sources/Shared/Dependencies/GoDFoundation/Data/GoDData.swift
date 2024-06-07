@@ -169,6 +169,10 @@ public final class GoDData: ExpressibleByStringLiteral {
         return Int(resultRange.startIndex)
     }
     
+    public func setByteOrder(_ order: ByteOrder) {
+        byteOrder = order
+    }
+    
     public func switchByteOrder(boundary: Int) {
         guard byteOrder != .unspecified else {
             return
@@ -186,6 +190,10 @@ public final class GoDData: ExpressibleByStringLiteral {
             self.write(swappedBytes, atAddress: i * boundary)
         }
     }
+    
+    public static var none: GoDData {
+        GoDData()
+    }
 }
 
 extension GoDData: GoDReadable {
@@ -199,13 +207,15 @@ extension GoDData: GoDWritable {
     @discardableResult
     public func write(_ data: GoDData, atAddress address: UInt) -> Bool {
         let startIndex = Int(address)
-        guard startIndex >= 0, startIndex < self.length else {
+        guard startIndex >= 0 else {
             return false
         }
+        if startIndex + data.length > self.length {
+            let required = startIndex + data.length - self.length
+            self.append(.init(length: required))
+        }
         let endIndex = min(startIndex + data.length, self.length)
-
-        guard let subData = data.read(atAddress: 0, length: endIndex - startIndex) else { return false }
-        self.data.replaceSubrange(startIndex ..< endIndex, with: subData.data)
+        self.data.replaceSubrange(startIndex ..< endIndex, with: data.data)
         return true
     }
 }

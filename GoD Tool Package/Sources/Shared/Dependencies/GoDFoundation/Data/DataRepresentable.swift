@@ -45,8 +45,24 @@ public extension PrimitiveDataType {
         if !copy.byteOrder.matches(Environment.byteOrder) {
             copy.switchByteOrder(boundary: Environment.wordSize)
         }
-        let bytesPointer = UnsafeMutableRawPointer.allocate(byteCount: copy.length, alignment: Environment.wordSize)
-        bytesPointer.storeBytes(of: copy.data, as: Data.self)
+        if data.length < Self.byteLength {
+            let extra = Self.byteLength - data.length
+            let extraWords = extra / Environment.wordSize
+            let extraBytes = extra % Environment.wordSize
+            
+            let extraBytesData = GoDData(length: extraBytes)
+            if Environment.byteOrder == .little {
+                copy.append(extraBytesData)
+            } else {
+                copy.insert(extraBytesData, atOffset: 0)
+            }
+            
+            let extraWordsData = GoDData(length: extraWords * Environment.wordSize)
+            copy.insert(extraWordsData, atOffset: 0)
+            
+        }
+        let bytesPointer = UnsafeMutableRawBufferPointer.allocate(byteCount: copy.length, alignment: Environment.wordSize)
+        copy.data.copyBytes(to: bytesPointer)
         let value = bytesPointer.load(as: Self.self)
         bytesPointer.deallocate()
         self = value

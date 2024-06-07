@@ -1,4 +1,4 @@
-// swift-tools-version:5.6
+// swift-tools-version:5.7
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -6,11 +6,15 @@ import PackageDescription
 let package = Package(
     name: "GoD Tool Package",
     platforms: [
-        .macOS(.v12),
+        .macOS(.v13),
     ],
     products: [
         // MARK: - Executable Products
         
+        .executable(
+            name: "GODDESS",
+            targets: ["GODDESS"]
+        ),
         .executable(
             name: "GoD Tool App",
             targets: ["GoD Tool UI"]
@@ -31,6 +35,10 @@ let package = Package(
         // MARK: - Base Library Products
         
         .library(
+            name: "BaseRebuilder",
+            targets: ["BaseRebuilder"]
+        ),
+        .library(
             name: "BaseApp",
             targets: ["BaseApp"]
         ),
@@ -45,11 +53,19 @@ let package = Package(
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        // .package(url: /* package url */, from: "1.0.0"),
+        .package(url: "https://github.com/TokamakUI/Tokamak", from: "0.11.0"),
+        .package(url: "https://github.com/kelvin13/swift-png", from: "4.0.2"),
     ],
     targets: [
         // MARK: - Executable Targets
         
+        .executableTarget(
+            name: "GODDESS",
+            dependencies: [
+                "BaseRebuilder"
+            ],
+            path: "Sources/Products/GODSDK"
+        ),
         .executableTarget(
             name: "GoD Tool UI",
             dependencies: [
@@ -81,13 +97,24 @@ let package = Package(
         // MARK: - Base Library Targets
         
         .target(
+            name: "BaseRebuilder",
+            dependencies: [
+                "GoDEngine",
+                "GameCube",
+                "Dolphin",
+                "GoDFoundation",
+                "Config"
+            ],
+            path: "Sources/Base/Rebuilder",
+            resources: []
+        ),
+        .target(
             name: "BaseApp",
             dependencies: [
                 "GoDEngine",
                 "GameCube",
                 "GoDFoundation",
                 "GoDGUI",
-                "GoDNetworking",
                 "Config"
             ],
             path: "Sources/Base/App",
@@ -122,7 +149,7 @@ let package = Package(
         .target(
             name: "GoDGUI",
             dependencies: [
-                
+//                .product(name: "TokamakShim", package: "Tokamak")
             ],
             path: "Sources/Shared/Core/Contexts/GUI",
             resources: [.process("Resources")]
@@ -167,10 +194,41 @@ let package = Package(
             name: "GameCube",
             dependencies: [
                 "GoDEngine",
+                "Dolphin",
                 "GoDFoundation",
                 "Structs"
             ],
             path: "Sources/Shared/Core/Engines/GameCube",
+            resources: [.process("Resources")]
+        ),
+        .target(
+            name: "Dolphin",
+            dependencies: [
+                "GoDEngine",
+                "GoDFoundation",
+                "Structs"
+            ],
+            path: "Sources/Shared/Core/Engines/Dolphin",
+            resources: [.process("Resources")]
+        ),
+        .target(
+            name: "Orre",
+            dependencies: [
+                "GoDEngine",
+                "GoDFoundation",
+                "Structs"
+            ],
+            path: "Sources/Shared/Core/Engines/Orre",
+            resources: [.process("Resources")]
+        ),
+        .target(
+            name: "GeniusSonority",
+            dependencies: [
+                "GoDEngine",
+                "GoDFoundation",
+                "Structs"
+            ],
+            path: "Sources/Shared/Core/Engines/GeniusSonority",
             resources: [.process("Resources")]
         ),
         .target(
@@ -222,13 +280,6 @@ let package = Package(
         
         // MARK: - Dependency Library Targets
         .target(
-            name: "Colors",
-            dependencies: [
-            ],
-            path: "Sources/Shared/Dependencies/Colors",
-            resources: []
-        ),
-        .target(
             name: "GoDFoundation",
             dependencies: [
             ],
@@ -263,20 +314,6 @@ let package = Package(
         
         // MARK: - Third Party Dependency Library Targets
         .target(
-            name: "ArgumentParser",
-            dependencies: [
-            ],
-            path: "Sources/Shared/Dependencies/Third Party/ArgumentParser/Sources",
-            resources: []
-        ),
-        .target(
-            name: "SwiftPNG",
-            dependencies: [
-            ],
-            path: "Sources/Shared/Dependencies/Third Party/SwiftPNG/sources",
-            resources: []
-        ),
-        .target(
             name: "xxHash",
             dependencies: [
             ],
@@ -295,18 +332,6 @@ let package = Package(
             name: "GoDStructTests",
             dependencies: ["Structs"],
             path: "Tests/Shared Tests/Dependency Tests/GoD Struct Tests"),
-        .testTarget(
-            name: "SwiftPNGTests",
-            dependencies: ["SwiftPNG"],
-            path: "Sources/Shared/Dependencies/Third Party/SwiftPNG/tests"),
-        .testTarget(
-            name: "ArgumentParserTests",
-            dependencies: [
-                "ArgumentParser"
-            ],
-            path: "Sources/Shared/Dependencies/Third Party/ArgumentParser/Tests",
-            resources: []
-        ),
     ]
 )
 

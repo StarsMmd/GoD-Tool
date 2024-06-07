@@ -20,42 +20,42 @@ public typealias IntegerRepresentable = IntegerConvertible & ExpressibleByIntege
 extension Int32: IntegerRepresentable {
     public var asInt: Int { Int(self) }
     public init(integer: Int) {
-        self = Int32(bitPattern: UInt32(integer & 0xFFFFFFFF))
+        self =  Int32(integer.int32Value)
     }
 }
 
 extension UInt32: IntegerRepresentable {
     public var asInt: Int { Int(self) }
     public init(integer: Int) {
-        self = UInt32(integer & 0xFFFFFFFF)
+        self = UInt32(bitPattern: Int32(integer.int32Value))
     }
 }
 
 extension Int16: IntegerRepresentable {
     public var asInt: Int { Int(self) }
     public init(integer: Int) {
-        self = Int16(bitPattern: UInt16(integer & 0xFFFF))
+        self = Int16(bitPattern: UInt16(integer.int16Value))
     }
 }
 
 extension UInt16: IntegerRepresentable {
     public var asInt: Int { Int(self) }
     public init(integer: Int) {
-        self = UInt16(integer & 0xFFFF)
+        self = UInt16(integer.int16Value)
     }
 }
 
 extension Int8: IntegerRepresentable {
     public var asInt: Int { Int(self) }
     public init(integer: Int) {
-        self = Int8(bitPattern: UInt8(integer & 0xFF))
+        self = Int8(bitPattern: UInt8(integer.int8Value))
     }
 }
 
 extension UInt8: IntegerRepresentable {
     public var asInt: Int { Int(self) }
     public init(integer: Int) {
-        self = UInt8(integer & 0xFF)
+        self = UInt8(integer.int8Value)
     }
 }
 
@@ -95,7 +95,7 @@ extension Array: IntegerRepresentable where Element: IntegerRepresentable & Fixe
     }
 }
 
-extension IntegerConvertible {
+public extension IntegerConvertible {
     func hex() -> String {
         return String(format: "%x", self.asInt).uppercased()
     }

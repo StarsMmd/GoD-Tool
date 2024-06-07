@@ -9,6 +9,7 @@ import Foundation
 import GoDFoundation
 
 public final class Config {
+    
     @UserDefaultPath("Last Selected Folder") public static var lastSelectedFolder: Folder? = nil
     
     private init() {}

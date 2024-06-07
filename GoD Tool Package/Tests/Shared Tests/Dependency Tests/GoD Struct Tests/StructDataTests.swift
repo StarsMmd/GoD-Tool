@@ -15,30 +15,31 @@ class StructDataTests: XCTestCase {
     func testInit() {
         let subdef = StructDefinition(
             name: "Test1",
+            wordSize: 4,
             alignmentStyle: .cStyle,
             properties: [
-                .init(name: "test1", type: .primitive(.uint16)),
-                .init(name: "test2", type: .array(.primitive(.uint16), count: 3)),
-                .init(name: "test3", type: .primitive(.uint32))
+                .init(name: "test1", type: .uint16),
+                .init(name: "test2", type: .array(.uint16, count: 3)),
+                .init(name: "test3", type: .uint32)
             ]
         )
         let def = StructDefinition(
             name: "Test2",
+            wordSize: 4,
             alignmentStyle: .cStyle,
             properties: [
-                .init(name: "test1", type: .primitive(.uint8)),
-                .init(name: "test2", type: .primitive(.int32)),
-                .init(name: "test3", type: .primitive(.uint16)),
-                .init(name: "test4", type: .primitive(.uint8)),
+                .init(name: "test1", type: .uint8),
+                .init(name: "test2", type: .int32),
+                .init(name: "test3", type: .uint16),
+                .init(name: "test4", type: .uint8),
                 .init(name: "test5", type: .subStruct(subdef)),
-                .init(name: "test6", type: .abstraction(.primitive(.int8), typeName: "test"))
+                .init(name: "test6", type: .abstraction(enum: weekEnum, property: .int8))
             ]
         )
         let rawBytes: [UInt8] = Array(0 ..< UInt8(def.length))
         let sut = StructData(
             definition: def,
-            data: GoDData(byteStream: rawBytes, byteOrder: .big),
-            wordSize: 4
+            data: GoDData(byteStream: rawBytes, byteOrder: .big)
         )
 
         XCTAssertEqual(sut.name, def.name)
@@ -51,30 +52,31 @@ class StructDataTests: XCTestCase {
     func testGet() {
         let subdef = StructDefinition(
             name: "Test1",
+            wordSize: 4,
             alignmentStyle: .cStyle,
             properties: [
-                .init(name: "test1", type: .primitive(.uint16)),
-                .init(name: "test2", type: .array(.primitive(.uint16), count: 3)),
-                .init(name: "test3", type: .primitive(.uint32))
+                .init(name: "test1", type: .uint16),
+                .init(name: "test2", type: .array(.uint16, count: 3)),
+                .init(name: "test3", type: .uint32)
             ]
         )
         let def = StructDefinition(
             name: "Test2",
+            wordSize: 4,
             alignmentStyle: .cStyle,
             properties: [
-                .init(name: "test1", type: .primitive(.uint8)),
-                .init(name: "test2", type: .primitive(.int32)),
-                .init(name: "test3", type: .primitive(.uint16)),
-                .init(name: "test4", type: .primitive(.uint8)),
+                .init(name: "test1", type: .uint8),
+                .init(name: "test2", type: .int32),
+                .init(name: "test3", type: .uint16),
+                .init(name: "test4", type: .uint8),
                 .init(name: "test5", type: .subStruct(subdef)),
-                .init(name: "test6", type: .abstraction(.primitive(.int8), typeName: "test"))
+                .init(name: "test6", type: .abstraction(enum: weekEnum, property: .int8))
             ]
         )
         let rawBytes: [UInt8] = Array(0 ..< UInt8(def.length))
         let sut = StructData(
             definition: def,
-            data: GoDData(byteStream: rawBytes, byteOrder: .big),
-            wordSize: 4
+            data: GoDData(byteStream: rawBytes, byteOrder: .big)
         )
 
         XCTAssertEqual(sut.get("test1"), 0)
@@ -93,39 +95,40 @@ class StructDataTests: XCTestCase {
     func testDynamicMembertGet() {
         let subdef = StructDefinition(
             name: "Test1",
+            wordSize: 4,
             alignmentStyle: .cStyle,
             properties: [
-                .init(name: "test1", type: .primitive(.uint16)),
-                .init(name: "test2", type: .array(.primitive(.uint16), count: 3)),
-                .init(name: "test3", type: .primitive(.uint32))
+                .init(name: "test1", type: .uint16),
+                .init(name: "test2", type: .array(.uint16, count: 3)),
+                .init(name: "test3", type: .uint32)
             ]
         )
         let def = StructDefinition(
             name: "Test2",
+            wordSize: 4,
             alignmentStyle: .cStyle,
             properties: [
-                .init(name: "test1", type: .primitive(.uint8)),
-                .init(name: "test2", type: .primitive(.int32)),
-                .init(name: "test3", type: .primitive(.uint16)),
-                .init(name: "test4", type: .primitive(.uint8)),
+                .init(name: "test1", type: .uint8),
+                .init(name: "test2", type: .int32),
+                .init(name: "test3", type: .uint16),
+                .init(name: "test4", type: .uint8),
                 .init(name: "test5", type: .subStruct(subdef)),
-                .init(name: "test6", type: .abstraction(.primitive(.int8), typeName: "test"))
+                .init(name: "test6", type: .abstraction(enum: weekEnum, property: .int8))
             ]
         )
         let rawBytes: [UInt8] = Array(0 ..< UInt8(def.length))
         let sut = StructData(
             definition: def,
-            data: GoDData(byteStream: rawBytes, byteOrder: .big),
-            wordSize: 4
+            data: GoDData(byteStream: rawBytes, byteOrder: .big)
         )
 
-        XCTAssertEqual(sut.test1, 0)
-        XCTAssertEqual(sut.test2, 0x04050607)
-        XCTAssertEqual(sut.test3, 0x0809)
-        XCTAssertEqual(sut.test4, 10)
-        XCTAssertEqual(sut.test6, 24)
+        XCTAssertEqual(try sut.test1, 0)
+        XCTAssertEqual(try sut.test2, 0x04050607)
+        XCTAssertEqual(try sut.test3, 0x0809)
+        XCTAssertEqual(try sut.test4, 10)
+        XCTAssertEqual(try sut.test6, 24)
 
-        XCTAssertEqual(sut.test5, GoDData(byteStream: [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23], byteOrder: .big))
+        XCTAssertEqual(try sut.test5, GoDData(byteStream: [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23], byteOrder: .big))
         let sut2: StructData? = sut.test5
         XCTAssertEqual(sut2?.test1, 0x0c0d)
         XCTAssertEqual(sut2?.test2, [0x0e0f, 0x1011, 0x1213] as [UInt16])
@@ -136,30 +139,31 @@ class StructDataTests: XCTestCase {
     func testSet() {
         let subdef = StructDefinition(
             name: "Test1",
+            wordSize: 4,
             alignmentStyle: .cStyle,
             properties: [
-                .init(name: "test1", type: .primitive(.uint16)),
-                .init(name: "test2", type: .array(.primitive(.uint16), count: 3)),
-                .init(name: "test3", type: .primitive(.uint32))
+                .init(name: "test1", type: .uint16),
+                .init(name: "test2", type: .array(.uint16, count: 3)),
+                .init(name: "test3", type: .uint32)
             ]
         )
         let def = StructDefinition(
             name: "Test2",
+            wordSize: 4,
             alignmentStyle: .cStyle,
             properties: [
-                .init(name: "test1", type: .primitive(.uint8)),
-                .init(name: "test2", type: .primitive(.int32)),
-                .init(name: "test3", type: .primitive(.uint16)),
-                .init(name: "test4", type: .primitive(.uint8)),
+                .init(name: "test1", type: .uint8),
+                .init(name: "test2", type: .int32),
+                .init(name: "test3", type: .uint16),
+                .init(name: "test4", type: .uint8),
                 .init(name: "test5", type: .subStruct(subdef)),
-                .init(name: "test6", type: .abstraction(.primitive(.int8), typeName: "test"))
+                .init(name: "test6", type: .abstraction(enum: weekEnum, property: .int8))
             ]
         )
         let rawBytes: [UInt8] = Array(0 ..< UInt8(def.length))
         let sut = StructData(
             definition: def,
-            data: GoDData(byteStream: rawBytes, byteOrder: .big),
-            wordSize: 4
+            data: GoDData(byteStream: rawBytes, byteOrder: .big)
         )
 
         sut.set("test1", to: GoDData(length: 1))
@@ -169,16 +173,20 @@ class StructDataTests: XCTestCase {
         sut.set("test5", to: GoDData(length: 12))
         sut.set("test6", to: GoDData(length: 1))
 
-        XCTAssertTrue(sut.get("test1")!.isNull)
-        XCTAssertTrue(sut.get("test2")!.isNull)
-        XCTAssertTrue(sut.get("test3")!.isNull)
-        XCTAssertTrue(sut.get("test4")!.isNull)
-        XCTAssertTrue(sut.get("test5")!.isNull)
-        XCTAssertTrue(sut.get("test6")!.isNull)
+        func checkNull(_ key: String) -> Bool {
+            let data: GoDData = sut.get(key)!
+            return data.isNull
+        }
+        XCTAssertTrue(checkNull("test1"))
+        XCTAssertTrue(checkNull("test2"))
+        XCTAssertTrue(checkNull("test3"))
+        XCTAssertTrue(checkNull("test4"))
+        XCTAssertTrue(checkNull("test5"))
+        XCTAssertTrue(checkNull("test6"))
 
-        XCTAssertTrue(sut.get("test5.test1")!.isNull)
-        XCTAssertTrue(sut.get("test5.test2")!.isNull)
-        XCTAssertTrue(sut.get("test5.test3")!.isNull)
+        XCTAssertTrue(checkNull("test5.test1"))
+        XCTAssertTrue(checkNull("test5.test2"))
+        XCTAssertTrue(checkNull("test5.test3"))
 
         sut.set("test5.test1", to: GoDData([UInt8]([1,2])))
         sut.set("test5.test2", to: GoDData([UInt8]([3,4,5,6,7,8])))
@@ -192,30 +200,31 @@ class StructDataTests: XCTestCase {
     func testDynamicMemberSet() {
         let subdef = StructDefinition(
             name: "Test1",
+            wordSize: 4,
             alignmentStyle: .cStyle,
             properties: [
-                .init(name: "test1", type: .primitive(.uint16)),
-                .init(name: "test2", type: .array(.primitive(.uint16), count: 3)),
-                .init(name: "test3", type: .primitive(.uint32))
+                .init(name: "test1", type: .uint16),
+                .init(name: "test2", type: .array(.uint16, count: 3)),
+                .init(name: "test3", type: .uint32)
             ]
         )
         let def = StructDefinition(
             name: "Test2",
+            wordSize: 4,
             alignmentStyle: .cStyle,
             properties: [
-                .init(name: "test1", type: .primitive(.uint8)),
-                .init(name: "test2", type: .primitive(.int32)),
-                .init(name: "test3", type: .primitive(.uint16)),
-                .init(name: "test4", type: .primitive(.uint8)),
+                .init(name: "test1", type: .uint8),
+                .init(name: "test2", type: .int32),
+                .init(name: "test3", type: .uint16),
+                .init(name: "test4", type: .uint8),
                 .init(name: "test5", type: .subStruct(subdef)),
-                .init(name: "test6", type: .abstraction(.primitive(.int8), typeName: "test"))
+                .init(name: "test6", type: .abstraction(enum: weekEnum, property: .int8))
             ]
         )
         let rawBytes: [UInt8] = Array(0 ..< UInt8(def.length))
         let sut = StructData(
             definition: def,
-            data: GoDData(byteStream: rawBytes, byteOrder: .big),
-            wordSize: 4
+            data: GoDData(byteStream: rawBytes, byteOrder: .big)
         )
 
         sut.test1 = GoDData(length: 1)
@@ -225,12 +234,16 @@ class StructDataTests: XCTestCase {
         sut.test5 = GoDData(length: 12)
         sut.test6 = GoDData(length: 1)
 
-        XCTAssertTrue(sut.get("test1")!.isNull)
-        XCTAssertTrue(sut.get("test2")!.isNull)
-        XCTAssertTrue(sut.get("test3")!.isNull)
-        XCTAssertTrue(sut.get("test4")!.isNull)
-        XCTAssertTrue(sut.get("test5")!.isNull)
-        XCTAssertTrue(sut.get("test6")!.isNull)
+        func checkNull(_ key: String) -> Bool {
+            let data: GoDData = sut.get(key)!
+            return data.isNull
+        }
+        XCTAssertTrue(checkNull("test1"))
+        XCTAssertTrue(checkNull("test2"))
+        XCTAssertTrue(checkNull("test3"))
+        XCTAssertTrue(checkNull("test4"))
+        XCTAssertTrue(checkNull("test5"))
+        XCTAssertTrue(checkNull("test6"))
     }
 
     func testGetAbstraction() {
@@ -238,27 +251,27 @@ class StructDataTests: XCTestCase {
         let structData = StructData(
             definition: StructDefinition(
                 name: "Test",
+                wordSize: 4,
                 alignmentStyle: .cStyle,
                 properties: [
                     .init(
                         name: "test1",
-                        type: .primitive(.uint8)
+                        type: .uint8
                     ),
                     .init(
                         name: "test2",
-                        type: .primitive(.uint16)
+                        type: .uint16
                     ),
                     .init(
                         name: "test3",
-                        type: .primitive(.uint32)
+                        type: .uint32
                     ),
                     .init(
                         name: "test4",
-                        type: .primitive(.float)
+                        type: .float
                     )
                 ]),
-            data: GoDData(byteStream: data, byteOrder: .big),
-            wordSize: 4
+            data: GoDData(byteStream: data, byteOrder: .big)
         )
 
         XCTAssertEqual(structData.get("test1"), UInt8(0x01))
@@ -269,27 +282,27 @@ class StructDataTests: XCTestCase {
         let structData2 = StructData(
             definition: StructDefinition(
                 name: "Test",
+                wordSize: 4,
                 alignmentStyle: .cStyle,
                 properties: [
                     .init(
                         name: "test1",
-                        type: .primitive(.uint8)
+                        type: .uint8
                     ),
                     .init(
                         name: "test2",
-                        type: .primitive(.uint16)
+                        type: .uint16
                     ),
                     .init(
                         name: "test3",
-                        type: .primitive(.uint32)
+                        type: .uint32
                     ),
                     .init(
                         name: "test4",
-                        type: .primitive(.float)
+                        type: .float
                     )
                 ]),
-            data: GoDData(byteStream: data, byteOrder: .little),
-            wordSize: 4
+            data: GoDData(byteStream: data, byteOrder: .little)
         )
 
         XCTAssertEqual(structData2.get("test1"), UInt8(0x01))
@@ -302,27 +315,27 @@ class StructDataTests: XCTestCase {
         let structData = StructData(
             definition: StructDefinition(
                 name: "Test",
+                wordSize: 4,
                 alignmentStyle: .cStyle,
                 properties: [
                     .init(
                         name: "test1",
-                        type: .primitive(.int8)
+                        type: .int8
                     ),
                     .init(
                         name: "test2",
-                        type: .primitive(.int16)
+                        type: .int16
                     ),
                     .init(
                         name: "test3",
-                        type: .primitive(.int32)
+                        type: .int32
                     ),
                     .init(
                         name: "test4",
-                        type: .primitive(.float)
+                        type: .float
                     )
                 ]),
-            data: GoDData(byteStream: data, byteOrder: .big),
-            wordSize: 4
+            data: GoDData(byteStream: data, byteOrder: .big)
         )
 
         XCTAssertEqual(structData.get("test1"), Int8(0x01))

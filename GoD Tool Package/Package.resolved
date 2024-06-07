@@ -1,0 +1,77 @@
+{
+  "pins" : [
+    {
+      "identity" : "javascriptkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftwasm/JavaScriptKit.git",
+      "state" : {
+        "revision" : "dac9d7b0342c5027fc74c8d2f212f10624123a7b",
+        "version" : "0.17.0"
+      }
+    },
+    {
+      "identity" : "opencombine",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/OpenCombine/OpenCombine.git",
+      "state" : {
+        "revision" : "9cf67e363738dbab61b47fb5eaed78d3db31e5ee",
+        "version" : "0.13.0"
+      }
+    },
+    {
+      "identity" : "opencombinejs",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftwasm/OpenCombineJS.git",
+      "state" : {
+        "revision" : "e574e418ba468ff5c2d4c499eb56f108aeb4d2ba",
+        "version" : "0.2.0"
+      }
+    },
+    {
+      "identity" : "swift-argument-parser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-argument-parser",
+      "state" : {
+        "revision" : "4ad606ba5d7673ea60679a61ff867cc1ff8c8e86",
+        "version" : "1.2.1"
+      }
+    },
+    {
+      "identity" : "swift-benchmark",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/google/swift-benchmark",
+      "state" : {
+        "revision" : "8163295f6fe82356b0bcf8e1ab991645de17d096",
+        "version" : "0.1.2"
+      }
+    },
+    {
+      "identity" : "swift-png",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kelvin13/swift-png",
+      "state" : {
+        "revision" : "075dfb248ae327822635370e9d4f94a5d3fe93b2",
+        "version" : "4.0.2"
+      }
+    },
+    {
+      "identity" : "tokamak",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/TokamakUI/Tokamak",
+      "state" : {
+        "revision" : "f1cbfcf073e2675566b0e9aa337441357d40d88a",
+        "version" : "0.11.1"
+      }
+    },
+    {
+      "identity" : "wamr-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftwasm/wamr-swift",
+      "state" : {
+        "revision" : "d321f5edd13a47d5e4da005515d08617957c32c9",
+        "version" : "0.1.1"
+      }
+    }
+  ],
+  "version" : 2
+}

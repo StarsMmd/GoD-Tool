@@ -47,6 +47,10 @@ public struct UserDefaultPath<Value: PathRepresentable> {
     
     public init(wrappedValue: Value?, _ key: String) {
         self.key = key
-        self.wrappedValue = wrappedValue
+        if let path = container.object(forKey: key) as? String {
+            self.wrappedValue = Value(path)
+        } else {
+            self.wrappedValue = wrappedValue
+        }
     }
 }

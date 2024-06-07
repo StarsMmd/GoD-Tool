@@ -31,7 +31,10 @@ extension GSCharacter {
         case (.gsColo, .special([4])), (.gsXD, .special([4])): return "{Kanji Start}"
         case (.gsColo, .special([5])), (.gsXD, .special([5])): return "{Furigana Start}"
         case (.gsColo, .special([6])), (.gsXD, .special([6])): return "{Furigana End}"
-        case (.gsColo, .special([7, 1])), (.gsXD, .special([7, 1])): return "{Bold}"
+        case (.gsColo, .special([7, 1])), (.gsXD, .special([7, 1])): return "{Font Bold}"
+        case (.gsColo, .special([7, 2])), (.gsXD, .special([7, 2])): return "{Font Super 1}"
+        case (.gsColo, .special([7, 3])), (.gsXD, .special([7, 3])): return "{Font Regular}"
+        case (.gsColo, .special([7, 4])), (.gsXD, .special([7, 4])): return "{Font Super 2}"
         case (.gsColo, .special(let bytes)) where bytes.count == 5 && bytes[0] == 8:
             fallthrough
         case (.gsXD, .special(let bytes)) where bytes.count == 5 && bytes[0] == 8: return "{Color: #\(bytes[1].hex())\(bytes[2].hex())\(bytes[3].hex())}"
@@ -101,7 +104,10 @@ extension GSCharacter {
             if string == "{Kanji Start}" { self = .special([0x04]); return }
             if string == "{Furigana Start}" { self = .special([0x05]); return }
             if string == "{Furigana End}" { self = .special([0x06]); return }
-            if string == "{Bold}" { self = .special([0x07, 0x01]); return }
+            if string == "{Font Bold}" { self = .special([0x07, 0x01]); return }
+            if string == "{Font Super 1}" { self = .special([0x07, 0x02]); return }
+            if string == "{Font Regular}" { self = .special([0x07, 0x03]); return }
+            if string == "{Font Super 2}" { self = .special([0x07, 0x04]); return }
             if string.startsWith("{Color: #"), string.endsWith("}") {
                 var substring = string.substring(from: "{Color: #".count)
                 substring = substring.substring(from: 0, to: -1)

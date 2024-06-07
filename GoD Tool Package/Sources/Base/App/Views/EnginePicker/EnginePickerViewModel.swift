@@ -23,7 +23,7 @@ class EnginePickerViewModel {
 extension EnginePickerViewModel {
     private static var engines: [Engine] {
         [
-            Gamcube.engine
+            GameCube.engine
         ]
     }
 }

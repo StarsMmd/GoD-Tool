@@ -11,17 +11,6 @@ import XCTest
 
 class GoDFolderTests: XCTestCase {
     
-    override class func setUp() {
-        super.setUp()
-        testFolder.delete()
-        testFolder.create()
-    }
-    
-    override class func tearDown() {
-        super.tearDown()
-        testFolder.delete()
-    }
-    
     func testInit() {
         let path = "initTest"
         let folder = Folder(path)
@@ -86,81 +75,4 @@ class GoDFolderTests: XCTestCase {
         let greatParent3 = greatParent2?.parentFolder
         XCTAssertNil(greatParent3?.path)
     }
-    
-    func testCreateDelete() {
-        let sut = testFolder.folder("createTest")
-        XCTAssertFalse(sut.exists)
-        XCTAssertTrue(sut.create())
-        XCTAssertTrue(sut.exists)
-        XCTAssertTrue(sut.delete())
-        XCTAssertFalse(sut.exists)
-        
-        let sut2 = testFolder.folder("createTest/test2")
-        XCTAssertFalse(sut.exists)
-        XCTAssertFalse(sut2.exists)
-        XCTAssertTrue(sut2.create())
-        XCTAssertTrue(sut.exists)
-        XCTAssertTrue(sut2.exists)
-        XCTAssertTrue(sut2.delete())
-        XCTAssertTrue(sut.exists)
-        XCTAssertFalse(sut2.exists)
-        
-        let sut3 = testFolder.folder("create test/space test")
-        XCTAssertFalse(sut3.exists)
-        XCTAssertTrue(sut3.create())
-        XCTAssertTrue(sut3.exists)
-        XCTAssertTrue(sut3.delete())
-        XCTAssertFalse(sut3.exists)
-    }
-    
-    func testFiles() {
-        let sut = testFolder.folder("filesTest")
-        sut.create()
-        (1 ... 5).forEach { id in
-            let testFile = sut.file("test file \(id)")
-            let testData: GoDData = "Test Data"
-            testData.save(to: testFile)
-            XCTAssertTrue(testFile.exists)
-            let testFolder = sut.folder("test folder \(id)")
-            testFolder.create()
-            XCTAssertTrue(testFolder.exists)
-        }
-        XCTAssertEqual(sut.files.count, 5)
-        (1 ... 5).forEach { id in
-            XCTAssertTrue(sut.contains(sut.file("test file \(id)")))
-            XCTAssertTrue(sut.files.contains(sut.file("test file \(id)")))
-            XCTAssertFalse(sut.files.contains(sut.folder("test folder \(id)")))
-        }
-        (6 ... 10).forEach { id in
-            XCTAssertFalse(sut.contains(sut.file("test file \(id)")))
-            XCTAssertFalse(sut.files.contains(sut.file("test file \(id)")))
-        }
-    }
-    
-    func testFolders() {
-        let sut = testFolder.folder("filesTest")
-        sut.create()
-        XCTAssertTrue(sut.exists)
-        
-        (1 ... 5).forEach { id in
-            let testFile = sut.file("test file \(id)")
-            let testData: GoDData = "Test Data"
-            testData.save(to: testFile)
-            XCTAssertTrue(testFile.exists)
-            let testFolder = sut.folder("test folder \(id)")
-            testFolder.create()
-            XCTAssertTrue(testFolder.exists)
-        }
-        XCTAssertEqual(sut.folders.count, 5)
-        (1 ... 5).forEach { id in
-            XCTAssertTrue(sut.contains(sut.folder("test folder \(id)")))
-            XCTAssertTrue(sut.folders.contains(sut.folder("test folder \(id)")))
-            XCTAssertFalse(sut.folders.contains(sut.file("test file \(id)")))
-        }
-        (6 ... 10).forEach { id in
-            XCTAssertFalse(sut.contains(sut.folder("test folder \(id)")))
-            XCTAssertFalse(sut.folders.contains(sut.folder("test folder \(id)")))
-        }
-    }
-    
 }

@@ -1,8 +1,0 @@
-module CGTK {
-    header "./termios-Header.h"
-    header "./CGTK-Bridging-Header.h"
-    
-    link "gtk-3"
-
-    export *
-}

@@ -9,11 +9,28 @@ extension GoDReadable {
         return read(atAddress: address, length: property.length)
     }
 
-    public func read(struct: StructDefinition, atAddress address: Int) -> StructData? {
-        guard let data = read(atAddress: address, length: `struct`.length) else {
+    public func read(struct definition: StructDefinition, atAddress address: Int) -> StructData? {
+        guard let data = read(atAddress: address, length: definition.length) else {
             return nil
         }
-        return StructData(definition: `struct`, data: data)
+        return StructData(definition: definition, data: data)
+    }
+    
+    public func read(structs definition: StructDefinition, atAddress address: Int, count: Int) -> [StructData]? {
+        guard count >= 0 else { return nil }
+        guard count > 0 else { return [] }
+        
+        var structs = [StructData]()
+        var currentOffset = address
+        for _ in 0 ..< count {
+            guard let data = read(struct: definition, atAddress: currentOffset) else {
+                return nil
+            }
+            structs.append(data)
+            currentOffset += definition.length
+        }
+        
+        return structs
     }
 }
 

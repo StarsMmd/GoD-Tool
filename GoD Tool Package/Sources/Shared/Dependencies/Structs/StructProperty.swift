@@ -8,28 +8,47 @@
 import Foundation
 import GoDFoundation
 
-public enum StructPrimitives: Equatable, Codable {
+public enum IntegerProperties: Codable, Equatable, CaseIterable {
     case uint8, int8
     case uint16, int16
+    case uint24, int24
     case uint32, int32
     case uint64, int64
-    case float, double
-    case character(StringFormats)
-
-    public var length: Int {
+    
+    var length: Int {
         switch self {
         case .uint8, .int8:
             return 1
         case .uint16, .int16:
             return 2
+        case .uint24, .int24:
+            return 3
         case .uint32, .int32:
             return 4
         case .uint64, .int64:
             return 8
+        }
+    }
+}
+
+public enum StructPrimitives: Equatable, Codable {
+    case void
+    case integer(IntegerProperties)
+    case float, double
+    case boolean, character(StringFormats)
+
+    public var length: Int {
+        switch self {
+        case .void:
+            return 0
+        case .integer(let type):
+            return type.length
         case .float:
             return 4
         case .double:
             return 8
+        case .boolean:
+            return 1
         case .character(let format):
             switch format {
             case .utf8:
@@ -46,7 +65,8 @@ public indirect enum StructProperty: Equatable, Codable {
     case primitive(StructPrimitives)
     case array(StructProperty, count: Int)
     case subStruct(StructDefinition)
-    case abstraction(StructProperty, typeName: String)
+    case abstraction(enum: EnumDefinition, property: IntegerProperties)
+    case padding(length: Int)
 
     public static func string(format: StringFormats, length: Int) -> StructProperty {
         return .array(.primitive(.character(format)), count: length)
@@ -60,22 +80,99 @@ public indirect enum StructProperty: Equatable, Codable {
             return type.length * count
         case .subStruct(let definition):
             return definition.length
-        case .abstraction(let type, _):
+        case .abstraction(_, let type):
             return type.length
+        case .padding(let length):
+            return length
         }
     }
 
     var alignment: Int {
         switch self {
+        case .primitive(.integer(.uint24)), .primitive(.integer(.int24)):
+            return 1
         case .primitive(let prim):
-            return prim.length
+            return max(prim.length, 1)
         case .array(let property, let count):
-            return count > 0 ? property.alignment : 0
+            return count > 0 ? property.alignment : 1
         case .subStruct(let definition):
             return definition.longestAlignment
-        case .abstraction(let property, _):
-            return property.alignment
+        case .abstraction(_, let property):
+            return StructProperty.primitive(.integer(property)).alignment
+        case .padding:
+            return 1
         }
     }
 }
 
+public extension StructProperty {
+    static var void: StructProperty { .primitive(.void)}
+    static var boolean: StructProperty { .primitive(.boolean)}
+    static var uint8: StructProperty { .primitive(.integer(.uint8))}
+    static var int8: StructProperty { .primitive(.integer(.int8))}
+    static var uint16: StructProperty { .primitive(.integer(.uint16))}
+    static var int24: StructProperty { .primitive(.integer(.int24))}
+    static var uint24: StructProperty { .primitive(.integer(.uint24))}
+    static var int16: StructProperty { .primitive(.integer(.int16))}
+    static var uint32: StructProperty { .primitive(.integer(.uint32))}
+    static var int32: StructProperty { .primitive(.integer(.int32))}
+    static var uint64: StructProperty { .primitive(.integer(.uint64))}
+    static var int64: StructProperty { .primitive(.integer(.int64))}
+    static var float: StructProperty { .primitive(.float)}
+    static var double: StructProperty { .primitive(.double)}
+}
+
+extension IntegerProperties: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .uint8: return "uint8"
+        case .int8: return "int8"
+        case .uint16: return "uint16"
+        case .int16: return "int16"
+        case .uint24: return "uint24"
+        case .int24: return "int24"
+        case .uint32: return "uint32"
+        case .int32: return "int32"
+        case .uint64: return "uint64"
+        case .int64: return "int64"
+        }
+    }
+}
+
+extension StructPrimitives: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .void: return "void"
+        case .integer(let type): return type.description
+        case .float: return "float"
+        case .double: return "double"
+        case .boolean: return "boolean"
+        case .character(let format):
+            switch format {
+            case .utf8: return "char_utf8"
+            case .utf16_big: return "char_utf16_big"
+            case .ascii_big: return "char_ascii_big"
+            case .unicode_big: return "char_unicode_big"
+            case .utf16_little: return "char_utf16_little"
+            case .ascii_little: return "char_ascii_little"
+            case .unicode_little: return "char_unicode_little"
+            case .gsColo: return "char_gsColo"
+            case .gsXD: return "char_gsXD"
+            case .gsPBR: return "char_gsPBR"
+            case .gs: return "char_gs"
+            }
+        }
+    }
+}
+
+extension StructProperty: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .primitive(let type): return type.description
+        case .array(let type, _): return "[\(type.description)]"
+        case .subStruct(let def): return def.name
+        case .abstraction(let type, _): return type.name
+        case .padding(let length): return "padding (\(length))"
+        }
+    }
+}

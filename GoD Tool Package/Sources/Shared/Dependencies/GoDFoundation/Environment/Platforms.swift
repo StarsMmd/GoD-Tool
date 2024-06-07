@@ -12,5 +12,6 @@ public enum Platforms: String, Equatable {
     case iOS
     case Windows
     case Linux
+    case WebAssembly
     case unknown
 }

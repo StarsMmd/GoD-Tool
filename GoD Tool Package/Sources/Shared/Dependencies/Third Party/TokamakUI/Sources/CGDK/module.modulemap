@@ -1,8 +1,0 @@
-module CGDK {
-    header "./termios-Header.h"
-    header "./CGDK-Bridging-Header.h"
-    
-    link "gdk-3"
-
-    export *
-}

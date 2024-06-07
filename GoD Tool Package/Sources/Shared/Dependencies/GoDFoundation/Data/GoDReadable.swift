@@ -12,54 +12,54 @@ public protocol GoDReadable {
     func read(atAddress address: UInt, length: UInt) -> GoDData?
 }
 
-extension GoDReadable {
-    public func read(atAddress address: Int, length: Int) -> GoDData? {
+public extension GoDReadable {
+    func read(atAddress address: Int, length: Int) -> GoDData? {
         return read(atAddress: UInt(address), length: UInt(length))
     }
 
-    public func readValue<T: ExpressibleByFixedLengthData>(atAddress address: Int) -> T? {
+    func readValue<T: ExpressibleByFixedLengthData>(atAddress address: Int) -> T? {
         guard let data = read(atAddress: address, length: T.byteLength) else {
             return nil
         }
         return T(data: data)
     }
     
-    public func readValues<T: ExpressibleByFixedLengthData>(atAddress address: Int, count: Int) -> [T]? {
+    func readValues<T: ExpressibleByFixedLengthData>(atAddress address: Int, count: Int) -> [T]? {
         guard let data = read(atAddress: address, length: T.byteLength * count) else {
             return nil
         }
         return Array<T>(data: data)
     }
     
-    public func readSafely<T: ExpressibleByFixedLengthData & ValueDefaulting>(atAddress address: Int) -> T {
+    func readSafely<T: ExpressibleByFixedLengthData & ValueDefaulting>(atAddress address: Int) -> T {
         guard let data = read(atAddress: address, length: T.byteLength) else {
             return T.defaultValue
         }
         return T(data: data) ?? T.defaultValue
     }
     
-    public func readType<T: ExpressibleByFixedLengthData>(_ type: T.Type, atAddress address: Int) -> T? {
+    func readType<T: ExpressibleByFixedLengthData>(_ type: T.Type, atAddress address: Int) -> T? {
         guard let data = read(atAddress: address, length: T.byteLength) else {
             return nil
         }
         return T(data: data)
     }
     
-    public func readTypeSafely<T: ExpressibleByFixedLengthData & ValueDefaulting>(_ type: T.Type, atAddress address: Int) -> T {
+    func readTypeSafely<T: ExpressibleByFixedLengthData & ValueDefaulting>(_ type: T.Type, atAddress address: Int) -> T {
         guard let data = read(atAddress: address, length: T.byteLength) else {
             return T.defaultValue
         }
         return T(data: data) ?? T.defaultValue
     }
     
-    public func readTypeAsInt<T: ExpressibleByFixedLengthData & IntegerConvertible>(_ type: T.Type, atAddress address: Int) -> Int {
+    func readTypeAsInt<T: ExpressibleByFixedLengthData & IntegerConvertible>(_ type: T.Type, atAddress address: Int) -> Int {
         guard let data = read(atAddress: address, length: T.byteLength) else {
             return 0
         }
         return T(data: data)?.asInt ?? 0
     }
     
-    public func readPrimtive<T: PrimitiveDataType>(atAddress address: Int) -> T? {
+    func readPrimtive<T: PrimitiveDataType>(atAddress address: Int) -> T? {
         guard let data = read(atAddress: address, length: T.byteLength) else {
             return nil
         }
@@ -69,7 +69,7 @@ extension GoDReadable {
         return T(data: data)
     }
     
-    public func readPrimitives<T: PrimitiveDataType>(atAddress address: Int, count: Int) -> [T]? {
+    func readPrimitives<T: PrimitiveDataType>(atAddress address: Int, count: Int) -> [T]? {
         guard let data = read(atAddress: address, length: T.byteLength * count) else {
             return nil
         }
@@ -127,7 +127,7 @@ extension GoDReadable {
         }
     }
 
-    public func readString(atAddress address: Int, format: StringFormats, maxCharacters: Int? = nil) -> String? {
+    func readString(atAddress address: Int, format: StringFormats, maxCharacters: Int? = nil) -> String? {
         if let maxCharacters = maxCharacters {
             var stringLength = maxCharacters * format.characterLength
             switch format {
@@ -184,11 +184,11 @@ extension GoDReadable {
         }
     }
     
-    public func readStringSafely(atAddress address: Int, format: StringFormats, maxCharacters: Int? = nil) -> String {
+    func readStringSafely(atAddress address: Int, format: StringFormats, maxCharacters: Int? = nil) -> String {
         return readString(atAddress: address, format: format, maxCharacters: maxCharacters) ?? ""
     }
     
-    public func readGSString(atAddress address: Int, format: StringFormats) -> GSString? {
+    func readGSString(atAddress address: Int, format: StringFormats) -> GSString? {
         var nextChar: GSCharacter?
         var result = [GSCharacter]()
         var offset = 0
@@ -215,7 +215,7 @@ extension GoDReadable {
         return GSString(characters: result)
     }
     
-    public func readGSStringSafely(atAddress address: Int, format: StringFormats) -> GSString {
+    func readGSStringSafely(atAddress address: Int, format: StringFormats) -> GSString {
         return readGSString(atAddress: address, format: format) ?? ""
     }
 }

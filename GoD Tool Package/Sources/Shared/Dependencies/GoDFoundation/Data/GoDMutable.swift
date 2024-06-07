@@ -18,8 +18,11 @@ extension GoDMutableData {
         append(value.rawData)
     }
 
-    public func appendString(_ string: String, format: StringFormats) {
+    public func appendString(_ string: String, format: StringFormats, includeTerminator: Bool = false) {
         self.append(string.data(format: format))
+        if includeTerminator {
+            self.append(GoDData(length: 1))
+        }
     }
 
     public func prepend(_ data: GoDData) {

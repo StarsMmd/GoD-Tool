@@ -12,14 +12,14 @@ import XCTest
 class StructPropertyTests: XCTestCase {
 
     func testPrimitivesLength() {
-        let sut1 = StructProperty.primitive(.uint8)
-        let sut2 = StructProperty.primitive(.int8)
-        let sut3 = StructProperty.primitive(.uint16)
-        let sut4 = StructProperty.primitive(.int16)
-        let sut5 = StructProperty.primitive(.uint32)
-        let sut6 = StructProperty.primitive(.int32)
-        let sut7 = StructProperty.primitive(.uint64)
-        let sut8 = StructProperty.primitive(.int64)
+        let sut1 = StructProperty.primitive(.integer(.uint8))
+        let sut2 = StructProperty.primitive(.integer(.int8))
+        let sut3 = StructProperty.primitive(.integer(.uint16))
+        let sut4 = StructProperty.primitive(.integer(.int16))
+        let sut5 = StructProperty.primitive(.integer(.uint32))
+        let sut6 = StructProperty.primitive(.integer(.int32))
+        let sut7 = StructProperty.primitive(.integer(.uint64))
+        let sut8 = StructProperty.primitive(.integer(.int64))
         let sut11 = StructProperty.primitive(.float)
         let sut12 = StructProperty.primitive(.double)
         let sut13 = StructProperty.primitive(.character(.utf8))
@@ -59,7 +59,7 @@ class StructPropertyTests: XCTestCase {
 
     func testArrayLength() {
         let testProperties: [StructProperty] = [
-            .primitive(.float), .primitive(.double), .primitive(.uint16)
+            .primitive(.float), .primitive(.double), .primitive(.integer(.uint16))
         ]
         let testArrays: [StructProperty] = testProperties.map { .array($0, count: 3) }
 
@@ -78,11 +78,12 @@ class StructPropertyTests: XCTestCase {
     func testSubStructLength() {
         let structDef = StructDefinition(
             name: "Test",
+            wordSize: 4,
             alignmentStyle: .cStyle,
             properties: [
-                .init(name: "test1", type: .primitive(.uint8)),
-                .init(name: "test2", type: .primitive(.uint16)),
-                .init(name: "test3", type: .primitive(.int32))
+                .init(name: "test1", type: .primitive(.integer(.uint8))),
+                .init(name: "test2", type: .primitive(.integer(.uint16))),
+                .init(name: "test3", type: .primitive(.integer(.int32)))
             ]
         )
         let sut = StructProperty.subStruct(structDef)
@@ -93,11 +94,12 @@ class StructPropertyTests: XCTestCase {
     func testSubStructArrayLength() {
         let structDef = StructDefinition(
             name: "Test",
+            wordSize: 4,
             alignmentStyle: .cStyle,
             properties: [
-                .init(name: "test1", type: .primitive(.uint8)),
-                .init(name: "test2", type: .primitive(.uint16)),
-                .init(name: "test3", type: .primitive(.int32))
+                .init(name: "test1", type: .primitive(.integer(.uint8))),
+                .init(name: "test2", type: .primitive(.integer(.uint16))),
+                .init(name: "test3", type: .primitive(.integer(.int32)))
             ]
         )
         let sut = StructProperty.array(.subStruct(structDef), count: 3)
@@ -106,13 +108,8 @@ class StructPropertyTests: XCTestCase {
     }
 
     func testAbstractionLength() {
-        let testProperties: [StructProperty] = [
-            .primitive(.float), .primitive(.double), .primitive(.uint16)
-        ]
-        let testArrays: [StructProperty] = testProperties.map { .array($0, count: 3) }
-
-        (testProperties + testArrays).forEach { prop in
-            let abstraction = StructProperty.abstraction(prop, typeName: "Test")
+        IntegerProperties.allCases.forEach { prop in
+            let abstraction = StructProperty.abstraction(enum: weekEnum, property: prop)
             XCTAssertEqual(prop.length, abstraction.length)
         }
     }

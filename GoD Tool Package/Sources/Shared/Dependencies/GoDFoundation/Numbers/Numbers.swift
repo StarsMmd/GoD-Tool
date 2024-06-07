@@ -7,19 +7,19 @@
 
 import Foundation
 
-extension Int {
+public extension Int {
     
-    public var boolean: Bool {
+    var boolean: Bool {
         return self != 0
     }
     
-    public var string: String {
+    var string: String {
         return String(self)
     }
     
-    public var unsigned : UInt32 {
+    var unsigned : UInt32 {
         if self >= 0 {
-            return UInt32(self)
+            return UInt32(self & 0xFFFFFFFF)
         }
         return UInt32(0xFFFFFFFF) - UInt32(-(self + 1))
     }
@@ -44,7 +44,7 @@ extension Int {
         return "0b" + binary()
     }
     
-    public var byteArray: [Int] {
+    var byteArray: [Int] {
         var val = self
         var array = [0,0,0,0]
         for j in [3,2,1,0] {
@@ -54,7 +54,7 @@ extension Int {
         return array
     }
     
-    public var byteArrayU16: [Int] {
+    var byteArrayU16: [Int] {
         var val = self
         var array = [0,0]
         for j in [1,0] {
@@ -64,7 +64,7 @@ extension Int {
         return array
     }
     
-    public var charArray: [UInt8] {
+    var charArray: [UInt8] {
         return byteArray.map({ (i) -> UInt8 in
             return UInt8(i)
         })
@@ -90,14 +90,39 @@ extension Int {
             return bit == 1
         }
     }
+    
+    var int8Value: Int {
+        return self & 0xFF
+    }
+    
+    var int16Value: Int {
+        return self & 0xFFFF
+    }
+    
+    var int32Value: Int {
+        // Implementation which works on 32 bit platforms which can't have an Int literal of 0xFFFFFFFF
+        let excessBytes = Environment.wordSize - 4
+        let excessBits = excessBytes * 8
+        var value = self
+        if excessBits > 0 {
+            value = value << excessBits
+            value = value >> excessBits
+        }
+        return value
+    }
 }
 
-extension UInt8 {
+public extension UInt8 {
+    
     func hex() -> String {
         return String(format: "%02x", self.asInt).uppercased()
     }
     
     func hexString() -> String {
         return "0x" + hex()
+    }
+    
+    func normalized() -> Double {
+        Double(self) / 255
     }
 }

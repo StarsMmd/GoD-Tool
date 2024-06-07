@@ -1,10 +1,15 @@
-//
-//  File.swift
-//  
-//
-//  Created by Stars Momodu on 10/09/2022.
-//
-
 import Foundation
+import GoDEngine
 
-let integerConstants: [String: Int] = [:]
+enum IntegerEntries {
+    static let entries: [EngineEntry<Int>] = [
+        fstIntegerEntry
+    ]
+}
+
+let fstIntegerEntry = EngineEntry(
+    name: "FST Integer Constants",
+    values: [
+        "FST Offset Multiplier": 1
+    ]
+)
