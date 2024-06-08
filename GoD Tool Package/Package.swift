@@ -158,7 +158,6 @@ let package = Package(
             name: "GoDCLI",
             dependencies: [
                 "GoDFoundation",
-                "GenericEngine",
                 "Config"
             ],
             path: "Sources/Shared/Core/Contexts/CLI",
@@ -174,12 +173,6 @@ let package = Package(
                 "Structs"
             ],
             path: "Sources/Shared/Core/Engines/Engine"),
-        .target(
-            name: "GenericEngine",
-            dependencies: [
-                "GoDFoundation"
-            ],
-            path: "Sources/Shared/Core/Engines/Generic"),
         .target(
             name: "Colosseum",
             dependencies: [
@@ -274,7 +267,7 @@ let package = Package(
             dependencies: [
                 "GoDFoundation",
             ],
-            path: "Sources/Shared/Features/Config",
+            path: "Sources/Shared/Dependencies/Config",
             resources: []
         ),
         
@@ -284,15 +277,6 @@ let package = Package(
             dependencies: [
             ],
             path: "Sources/Shared/Dependencies/GoDFoundation",
-            resources: []
-        ),
-        .target(
-            name: "GoDISO",
-            dependencies: [
-                "GoDFoundation",
-                "Structs"
-            ],
-            path: "Sources/Shared/Features/ISO",
             resources: []
         ),
         .target(

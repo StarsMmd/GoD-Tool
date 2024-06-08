@@ -16,6 +16,8 @@ public class DolphinFST: FileFormat {
     public var folders = [Folder]()
     
     public init(tocData: GoDData, userSectionOffset: Int, engine: Engine) throws {
+        let offsetMultiplier: Int = try engine.get("FST Offset Multiplier")
+        
         let rootStruct: StructDefinition = try engine.get("FST Root Struct")
         let fileStruct: StructDefinition = try engine.get("FST File Struct")
         let folderStruct: StructDefinition = try engine.get("FST Folder Struct")
@@ -58,8 +60,8 @@ public class DolphinFST: FileFormat {
                     throw Self.invalidFileError
                 }
                 let nameOffset: Int = try entry.nameOffset
-                let fileOffset: Int = try entry.fileOffset
-                let fileSize: Int = try entry.fileSize
+                let fileOffset: Int = (try entry.fileOffset) * offsetMultiplier
+                let fileSize: Int = (try entry.fileSize) * offsetMultiplier
                 guard let filename = getString(nameOffset) else {
                     throw Self.invalidFileError
                 }
@@ -117,6 +119,8 @@ public class DolphinFST: FileFormat {
     }
     
     public func tocData(userOffset: Int, engine: Engine) throws -> GoDData {
+        let offsetMultiplier: Int = try engine.get("FST Offset Multiplier")
+        
         let tocData = GoDData(length: tocDataLength, byteOrder: .big)
         
         let entrySize = 12
@@ -152,8 +156,8 @@ public class DolphinFST: FileFormat {
                 let fileData = StructData(definition: fileStruct, byteOrder: .big)
                 fileData.isDirectory = false
                 fileData.nameOffset = nameOffset
-                fileData.fileOffset = fullOffset
-                fileData.fileSize = size
+                fileData.fileOffset = fullOffset / offsetMultiplier
+                fileData.fileSize = size / offsetMultiplier
                 tocData.write(struct: fileData, atAddress: currentOffset)
             } else {
                 let folder = Folder(currentPath)
