@@ -46,7 +46,7 @@ public class FileSystem: FileSystemTree {
             return false
         }
         do {
-            if !parentFolder.exists {
+            if !itemExists(at: parentFolder) {
                 createFolder(at: parentFolder, overwrite: overwrite)
             }
             try FileManager.default.moveItem(atPath: path.path, toPath: newPath.path)
@@ -59,7 +59,7 @@ public class FileSystem: FileSystemTree {
     @discardableResult
     public func writeFile(_ file: GoDData, at path: File, overwrite: Bool) -> Bool {
         guard let parentFolder = path.parentFolder else { return false }
-        if !parentFolder.exists {
+        if !itemExists(at: parentFolder) {
             createFolder(at: parentFolder, overwrite: overwrite)
         }
         guard !itemExists(at: path) || overwrite else { return false }
@@ -90,7 +90,7 @@ public class FileSystem: FileSystemTree {
         let folder = path
         let contents = paths.map { path in
             var isDirectory: ObjCBool = false
-            _ = fm.fileExists(atPath: path, isDirectory: &isDirectory)
+            _ = fm.fileExists(atPath: folder.file(path).path, isDirectory: &isDirectory)
             if isDirectory.boolValue {
                 let folderPath = folder.folder(path)
                 return FolderMetaData.Item.folder(path: folderPath)
@@ -113,7 +113,7 @@ public class FileSystem: FileSystemTree {
             return false
         }
         do {
-            if !parentFolder.exists {
+            if !itemExists(at: parentFolder) {
                 createFolder(at: parentFolder, overwrite: overwrite)
             }
             guard !itemExists(at: path) || overwrite else { return false }
@@ -185,5 +185,30 @@ public class FileSystem: FileSystemTree {
             }
         }
         write(fst.root, to: path)
+    }
+    
+    public func setExecutable(file: File) {
+        guard itemExists(at: file) else { return }
+        let fm = FileManager.default
+        try? fm.setAttributes([FileAttributeKey.posixPermissions: 0o777], ofItemAtPath: file.path)
+    }
+}
+
+public extension FileSystemTree {
+    func decodeJSON<T: Decodable>(from file: File) throws -> T {
+        guard let data = readFile(at: file) else {
+            throw FSTErrors.fileNotFound(file)
+        }
+        let decoder = JSONDecoder()
+        return try decoder.decode(T.self, from: data)
+    }
+}
+
+public extension FileSystemTree {
+    func encodeJSON<Value: Encodable>(_ value: Value, to file: File, overwrite: Bool) throws {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted
+        let data: GoDData = try encoder.encode(value)
+        _ = writeFile(data, at: file, overwrite: overwrite)
     }
 }

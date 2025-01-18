@@ -8,7 +8,7 @@
 import Foundation
 import Structs
 
-let fstRootEntryStruct = StructDefinition(
+let fstRootEntryStruct = StructMap(
     name: "FST Root Entry",
     wordSize: 4,
     alignmentStyle: .cStyle,
@@ -19,7 +19,7 @@ let fstRootEntryStruct = StructDefinition(
     ]
 )
 
-let fstDirectoryEntryStruct = StructDefinition(
+let fstDirectoryEntryStruct = StructMap(
     name: "FST Directory Entry",
     wordSize: 4,
     alignmentStyle: .cStyle,
@@ -31,7 +31,7 @@ let fstDirectoryEntryStruct = StructDefinition(
     ]
 )
 
-let fstFileEntryStruct = StructDefinition(
+let fstFileEntryStruct = StructMap(
     name: "FST File Entry",
     wordSize: 4,
     alignmentStyle: .cStyle,

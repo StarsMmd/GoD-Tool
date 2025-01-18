@@ -3,7 +3,7 @@ import GoDEngine
 import Structs
 
 enum StructEntries {
-    static let entries: [EngineEntry<StructDefinition>] = [
+    static let entries: [EngineEntry<StructMap>] = [
         systemFileStructConstants
     ]
 }

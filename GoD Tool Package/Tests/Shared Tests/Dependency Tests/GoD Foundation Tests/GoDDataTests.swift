@@ -287,8 +287,8 @@ class GoDDataTests: XCTestCase {
         data.write("lion", atAddress: 0)
         XCTAssertEqual(data.string(format: .utf8), "lion")
         
-        data.write("men", atAddress: 2)
-        XCTAssertEqual(data.string(format: .utf8), "lime")
+        data.write("mes", atAddress: 2)
+        XCTAssertEqual(data.string(format: .utf8), "limes")
     }
     
     func testReadInt8() {

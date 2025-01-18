@@ -8,7 +8,7 @@
 import Foundation
 import Structs
 
-let bi2Struct = StructDefinition(
+let bi2Struct = StructMap(
     name: "Bi2 Data",
     wordSize: 4,
     alignmentStyle: .cStyle,

@@ -9,7 +9,7 @@ import Foundation
 import GoDFoundation
 
 @dynamicMemberLookup
-public class StructData: Codable {
+public class StructData {
 
     public let definition: StructDefinition
     public let data: GoDData
@@ -108,6 +108,50 @@ public class StructData: Codable {
             return data.string(format: .utf8)
         }
     }
+    
+    public subscript(dynamicMember member: String) -> String? {
+        get {
+            self.getString(member, format: .utf8)
+        }
+        set {
+            guard let newValue, let type = definition.property(for: member) else {
+                return
+            }
+            switch type {
+            case .enumeration(let enumeration):
+                if let enumCase = try? enumeration.get(newValue) {
+                    set(member, to: enumCase.rawValue)
+                }
+            default:
+                set(member, to: newValue, format: .utf8)
+            }
+        }
+    }
+    
+    public subscript(dynamicMember member: String) -> Enum.Case {
+        get throws {
+            guard let type = definition.property(for: member) else {
+                throw StructError.MissingKey(key: member, struct: self)
+            }
+            guard case .enumeration(let enumDef) = type else {
+                throw StructError.TypeMismatch(key: member, propertyType: type, type: Enum.Case.self, struct: self)
+            }
+
+            let rawValue: Int = try self[dynamicMember: member]
+            let value = try enumDef.get(rawValue)
+            
+            return value
+        }
+    }
+
+    public subscript(dynamicMember member: String) -> Enum.Case? {
+        get {
+            self.get(member)
+        }
+        set {
+            self.set(member, to: newValue)
+        }
+    }
 
     public func get(_ keypath: String) -> GoDData? {
         guard let offset = definition.offset(for: keypath),
@@ -116,6 +160,43 @@ public class StructData: Codable {
         }
 
         return data.read(atAddress: offset, length: length)
+    }
+    
+    public func get(_ keypath: String) -> Int? {
+        guard let data: GoDData = get(keypath),
+              let property = definition.property(for: keypath) else { return nil }
+        
+        func getInteger(_ type: IntegerProperties) -> Int? {
+            switch type {
+            case .uint8, .uint16, .uint24, .uint32, .uint64:
+                return Int(data: data)
+            case .int8:
+                return data.readTypeAsInt(Int8.self, atAddress: 0)
+            case .int16:
+                return data.readTypeAsInt(Int16.self, atAddress: 0)
+            case .int24:
+                guard let firstByte: UInt8 = data.readValue(atAddress: 0) else {
+                    return Int(data: data)
+                }
+                let isNegative = firstByte > 0x7F
+                let fillByte = GoDData(byteStream: [isNegative ? 0xFF : 0x00])
+                data.insert(fillByte, atOffset: 0)
+                return data.readTypeAsInt(Int32.self, atAddress: 0)
+            case .int32:
+                return data.readTypeAsInt(Int32.self, atAddress: 0)
+            case .int64:
+                return data.readTypeAsInt(Int64.self, atAddress: 0)
+            }
+        }
+        
+        switch property {
+        case .primitive(.integer(let type)):
+            return getInteger(type)
+        case .enumeration(let definition):
+            return getInteger(definition.propertyType)
+        case .primitive, .array, .subStruct, .padding:
+            return Int(data: data)
+        }
     }
 
     public func get(_ keypath: String) -> StructData? {
@@ -133,6 +214,20 @@ public class StructData: Codable {
             return nil
         }
         return T(data: data)
+    }
+    
+    public func get(_ keypath: String) -> Enum.Case? {
+        guard let type = definition.property(for: keypath) else {
+            return nil
+        }
+        guard case .enumeration(let definition) = type else {
+            return nil
+        }
+
+        let rawValue: Int = get(keypath) ?? 0
+        let value = try? definition.get(rawValue)
+        
+        return value
     }
     
     public func getString(_ keypath: String, format: StringFormats) -> String? {
@@ -186,6 +281,10 @@ public class StructData: Codable {
     public func set(_ keypath: String, to value: String, format: StringFormats) {
         set(keypath, to: value.data(format: format))
     }
+    
+    public func set(_ keypath: String, to value: Enum.Case?) {
+        set(keypath, to: value?.rawValue)
+    }
 }
 
 extension StructData: Equatable {
@@ -229,12 +328,10 @@ extension StructData: CustomStringConvertible {
                 result += description(for: type, name: name) + " <\(typeName)>\n"
             case .array(.primitive(.character(let format)), _):
                 result += description(for: .character(format), name: name) + " <\(typeName)>\n"
-            case .abstraction(let enumeration, _):
-                guard let value: Int = get(name) else { result += "\(name) = N/A"; continue }
-                result += "\(name) = \(value)"
-                if let enumValue = try? enumeration.get(value) {
-                    result += " \(enumValue.name)"
-                }
+            case .enumeration(let enumeration):
+                guard let value: Int = get(name) else { result += "\(name) = N/A\n"; continue }
+                let enumValue = try? enumeration.get(value)
+                result += "\(name) = \(enumValue?.name ?? "unknown") (\(value)) <\(enumeration.name)>\n"
             case .subStruct:
                 guard let data: StructData = get(name) else {
                     result += "N/A"; continue

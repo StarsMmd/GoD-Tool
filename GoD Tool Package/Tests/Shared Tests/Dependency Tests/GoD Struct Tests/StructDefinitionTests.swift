@@ -104,7 +104,7 @@ class StructDefinitionTests: XCTestCase {
                         .init(name: "test3", type: .uint16),
                         .init(name: "test4", type: .uint8),
                         .init(name: "test5", type: .subStruct(subsut)),
-                        .init(name: "test6", type: .abstraction(enum: weekEnum, property: .int8))
+                        .init(name: "test6", type: .enumeration(weekEnum))
                     ]
                 )
 

@@ -5,7 +5,6 @@
 //  Created by Stars Momodu on 12/06/2022.
 //
 
-import Foundation
 import GoDFoundation
 
 public enum StructAlignmentStyles: String, Equatable, Codable {
@@ -13,17 +12,15 @@ public enum StructAlignmentStyles: String, Equatable, Codable {
     case cStyle
 }
 
-public struct StructDefinition: Equatable, Codable {
+public struct StructDefinition: Equatable {
 
-    public struct Property: Equatable, Codable {
+    public struct Property: Equatable {
         public let name: String
-        public let displayName: String
         public let description: String?
         public let type: StructProperty
 
         public init(name: String, type: StructProperty, description: String? = nil) {
             self.name = name.replacingOccurrences(of: " ", with: "")
-            self.displayName = name
             self.description = description
             self.type = type
         }
@@ -33,8 +30,6 @@ public struct StructDefinition: Equatable, Codable {
     public let wordSize: Int
     public let alignmentStyle: StructAlignmentStyles
     public let properties: [Property]
-
-    public let displayName: String
     public let description: String?
 
     public var length: Int {
@@ -72,8 +67,8 @@ public struct StructDefinition: Equatable, Codable {
                 longest = max(longest, property.alignment)
             case .subStruct(let substruct):
                 longest = max(longest, substruct.longestAlignment)
-            case .abstraction(_, let property):
-                longest = max(longest, StructProperty.primitive(.integer(property)).alignment)
+            case .enumeration(let definition):
+                longest = max(longest, StructProperty.primitive(.integer(definition.propertyType)).alignment)
             case .padding:
                 longest = max(longest, 1)
             }
@@ -83,14 +78,12 @@ public struct StructDefinition: Equatable, Codable {
 
     public init(
         name: String,
-        displayName: String? = nil,
         wordSize: Int,
         alignmentStyle: StructAlignmentStyles,
         properties: [Property],
         description: String? = nil
     ) {
         self.name = name.replacingOccurrences(of: " ", with: "")
-        self.displayName = displayName ?? name
         self.wordSize = wordSize
         self.alignmentStyle = alignmentStyle
         self.properties = properties
@@ -159,13 +152,6 @@ public struct StructDefinition: Equatable, Codable {
     
     private func keyFor(_ propertyName: String) -> String {
         propertyName.replacingOccurrences(of: " ", with: "").lowercased()
-    }
-}
-
-public extension StructDefinition {
-    init?(string: String) {
-        // regex
-        return nil
     }
 }
 
@@ -246,11 +232,12 @@ public extension StructDefinition.Property {
         StructDefinition.Property(name: name, type: .subStruct(defintion), description: description)
     }
 
-    static func abstraction(name: String, enumeration: EnumDefinition, property: IntegerProperties, description: String? = nil) -> StructDefinition.Property {
-        StructDefinition.Property(name: name, type: .abstraction(enum: enumeration, property: property), description: description)
+    static func abstraction(name: String, enumeration: Enum, description: String? = nil) -> StructDefinition.Property {
+        StructDefinition.Property(name: name, type: .enumeration(enumeration), description: description)
     }
     
     static func padding(length: Int) -> StructDefinition.Property {
         StructDefinition.Property(name: "padding", type: .array(.uint8, count: length))
     }
 }
+

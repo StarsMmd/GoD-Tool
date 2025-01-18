@@ -8,7 +8,7 @@
 import Foundation
 import Structs
 
-let dolHeaderStruct = StructDefinition(
+let dolHeaderStruct = StructMap(
     name: "Dol Header",
     wordSize: 4,
     alignmentStyle: .cStyle,

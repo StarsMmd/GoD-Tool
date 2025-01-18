@@ -15,8 +15,8 @@ public class CustomEngine: Engine, Codable {
     public let integerEntries: [EngineEntry<Int>]
     public let doubleEntries: [EngineEntry<Double>]
     public let stringEntries: [EngineEntry<String>]
-    public let enumEntries: [EngineEntry<EnumDefinition>]
-    public let structEntries: [EngineEntry<StructDefinition>]
+    public let enumEntries: [EngineEntry<Enum>]
+    public let structEntries: [EngineEntry<StructMap>]
     
     public init(
         name: String,
@@ -25,8 +25,8 @@ public class CustomEngine: Engine, Codable {
         integerEntries: [EngineEntry<Int>],
         doubleEntries: [EngineEntry<Double>],
         stringEntries: [EngineEntry<String>],
-        enumEntries: [EngineEntry<EnumDefinition>],
-        structEntries: [EngineEntry<StructDefinition>]
+        enumEntries: [EngineEntry<Enum>],
+        structEntries: [EngineEntry<StructMap>]
     ) {
         self.name = name
         self.description = description

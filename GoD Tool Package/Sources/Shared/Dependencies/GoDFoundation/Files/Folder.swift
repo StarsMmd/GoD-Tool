@@ -24,14 +24,40 @@ public struct Folder: PathRepresentable, Hashable, Equatable {
     
     /// Get a file contained in this folder
     public func file(_ relativePath: String) -> File {
-        let divider = self.path.last == "/" || relativePath.first == "/" ? "" : "/"
-        return File(path + divider + relativePath)
+        var first = self.path
+        if first.last == "/" {
+            first.removeLast()
+        }
+        var last = relativePath
+        if last.first == "/" {
+            last.removeFirst()
+        }
+        
+        return File(first + "/" + last)
+    }
+    
+    /// Get a file contained in this folder
+    public func file(_ relativePath: File) -> File {
+        file(relativePath.path)
     }
     
     /// Get a folder contained in this folder
     public func folder(_ relativePath: String) -> Folder {
-        let divider = self.path.last == "/" || relativePath.first == "/" ? "" : "/"
-        return Folder(path + divider + relativePath)
+        var first = self.path
+        if first.last == "/" {
+            first.removeLast()
+        }
+        var last = relativePath
+        if last.first == "/" {
+            last.removeFirst()
+        }
+        
+        return Folder(first + "/" + last)
+    }
+    
+    /// Get a folder contained in this folder
+    public func folder(_ relativePath: Folder) -> Folder {
+        folder(relativePath.path)
     }
 }
 
@@ -46,5 +72,11 @@ extension Folder: ExpressibleByStringLiteral {
 extension Folder: Comparable {
     public static func < (lhs: Folder, rhs: Folder) -> Bool {
         return lhs.path < rhs.path
+    }
+}
+
+extension Folder: Codable {
+    enum CodingKeys: String, CodingKey {
+        case path
     }
 }

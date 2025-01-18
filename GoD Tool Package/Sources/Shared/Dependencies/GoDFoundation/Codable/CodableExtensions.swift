@@ -9,10 +9,7 @@ import Foundation
 
 public extension Encodable {
     func encodeJSON() -> GoDData? {
-        guard let data = try? JSONEncoder().encode(self) else {
-            return nil
-        }
-        return GoDData(data: data)
+        try? JSONEncoder().encode(self)
     }
     
     func encodeJSONString() -> String? {
@@ -22,7 +19,7 @@ public extension Encodable {
 
 public extension Decodable {
     static func decodeJSON(from data: GoDData) -> Self? {
-        return try? JSONDecoder().decode(Self.self, from: data.data)
+        return try? JSONDecoder().decode(Self.self, from: data)
     }
     
     static func decodeJSON(from string: String) -> Self? {

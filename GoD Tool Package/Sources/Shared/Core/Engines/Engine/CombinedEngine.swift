@@ -20,24 +20,24 @@ public class CombinedEngine: Engine, Codable {
         self.engines = engines
     }
     
-    public var boolEntries: [EngineEntry<Bool>] {
+    public lazy var boolEntries: [EngineEntry<Bool>] = {
         engines.flatMap(\.boolEntries)
-    }
-    public var integerEntries: [EngineEntry<Int>] {
+    }()
+    public lazy var integerEntries: [EngineEntry<Int>] = {
         engines.flatMap(\.integerEntries)
-    }
-    public var doubleEntries: [EngineEntry<Double>] {
+    }()
+    public lazy var doubleEntries: [EngineEntry<Double>] = {
         engines.flatMap(\.doubleEntries)
-    }
-    public var stringEntries: [EngineEntry<String>] {
+    }()
+    public lazy var stringEntries: [EngineEntry<String>] = {
         engines.flatMap(\.stringEntries)
-    }
-    public var enumEntries: [EngineEntry<EnumDefinition>] {
+    }()
+    public lazy var enumEntries: [EngineEntry<Enum>] = {
         engines.flatMap(\.enumEntries)
-    }
-    public var structEntries: [EngineEntry<StructDefinition>] {
+    }()
+    public lazy var structEntries: [EngineEntry<StructMap>] = {
         engines.flatMap(\.structEntries)
-    }
+    }()
     
     enum CodingKeys: String, CodingKey {
         case name, description, engines

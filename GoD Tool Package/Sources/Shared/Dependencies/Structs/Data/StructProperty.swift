@@ -61,11 +61,11 @@ public enum StructPrimitives: Equatable, Codable {
     }
 }
 
-public indirect enum StructProperty: Equatable, Codable {
+public indirect enum StructProperty: Equatable {
     case primitive(StructPrimitives)
     case array(StructProperty, count: Int)
     case subStruct(StructDefinition)
-    case abstraction(enum: EnumDefinition, property: IntegerProperties)
+    case enumeration(Enum)
     case padding(length: Int)
 
     public static func string(format: StringFormats, length: Int) -> StructProperty {
@@ -80,8 +80,8 @@ public indirect enum StructProperty: Equatable, Codable {
             return type.length * count
         case .subStruct(let definition):
             return definition.length
-        case .abstraction(_, let type):
-            return type.length
+        case .enumeration(let definition):
+            return definition.propertyType.length
         case .padding(let length):
             return length
         }
@@ -97,8 +97,8 @@ public indirect enum StructProperty: Equatable, Codable {
             return count > 0 ? property.alignment : 1
         case .subStruct(let definition):
             return definition.longestAlignment
-        case .abstraction(_, let property):
-            return StructProperty.primitive(.integer(property)).alignment
+        case .enumeration(let definition):
+            return StructProperty.primitive(.integer(definition.propertyType)).alignment
         case .padding:
             return 1
         }
@@ -137,6 +137,22 @@ extension IntegerProperties: CustomStringConvertible {
         case .int64: return "int64"
         }
     }
+    
+    public static func from(name: String) -> IntegerProperties? {
+        switch name {
+        case "uint8": return .uint8
+        case "int8": return .int8
+        case "uint16": return .uint16
+        case "int16": return .int16
+        case "uint24": return .uint24
+        case "int24": return .int24
+        case "uint32": return .uint32
+        case "int32": return .int32
+        case "uint64": return .uint64
+        case "int64": return .int64
+        default: return nil
+        }
+    }
 }
 
 extension StructPrimitives: CustomStringConvertible {
@@ -163,16 +179,41 @@ extension StructPrimitives: CustomStringConvertible {
             }
         }
     }
+    
+    public static func from(name: String) -> StructPrimitives? {
+        if let integer = IntegerProperties.from(name: name) {
+            return .integer(integer)
+        }
+        switch name {
+        case "void": return .void
+        case "char": return .integer(.uint8)
+        case "float": return .float
+        case "double": return .double
+        case "boolean": return .boolean
+        case "char_utf8": return .character(.utf8)
+        case "char_utf16_big": return .character(.utf16_big)
+        case "char_ascii_big": return .character(.ascii_big)
+        case "char_unicode_big": return .character(.unicode_big)
+        case "char_utf16_little": return .character(.utf16_little)
+        case "char_ascii_little": return .character(.ascii_little)
+        case "char_unicode_little": return .character(.unicode_little)
+        case "char_gsColo": return .character(.gsColo)
+        case "char_gsXD": return .character(.gsXD)
+        case "char_gsPBR": return .character(.gsPBR)
+        case "char_gs": return .character(.gs)
+        default: return nil
+        }
+    }
 }
 
 extension StructProperty: CustomStringConvertible {
     public var description: String {
         switch self {
         case .primitive(let type): return type.description
-        case .array(let type, _): return "[\(type.description)]"
-        case .subStruct(let def): return def.name
-        case .abstraction(let type, _): return type.name
-        case .padding(let length): return "padding (\(length))"
+        case .array(let type, let count): return "\(type.description)[\(count)]"
+        case .subStruct(let defintion): return "struct " + defintion.name
+        case .enumeration(let definition): return "enum " + definition.name
+        case .padding(let length): return "void[\(length)]"
         }
     }
 }

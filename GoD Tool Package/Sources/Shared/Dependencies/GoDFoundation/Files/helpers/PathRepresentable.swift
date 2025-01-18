@@ -41,20 +41,6 @@ public extension PathRepresentable {
         }
         return Folder(path.substring(from: path.startIndex, to: lastPathComponentIndex))
     }
-    
-    var exists: Bool {
-        return FileManager.default.fileExists(atPath: path)
-    }
-    
-    @discardableResult
-    func delete() -> Bool {
-        do {
-            try FileManager.default.removeItem(atPath: path)
-            return true
-        } catch {
-            return false
-        }
-    }
 }
 
 public extension Array where Element: PathRepresentable {

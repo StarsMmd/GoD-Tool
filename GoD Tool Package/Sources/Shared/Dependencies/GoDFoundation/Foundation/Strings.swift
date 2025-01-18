@@ -138,8 +138,30 @@ extension String {
     }
 }
 
-extension String {
-    public var lines: [String] {
+public extension String {
+    var lines: [String] {
         return self.split(separator: "\n").map { String($0) }
+    }
+    
+    var camelCased: String {
+        let result = self.split(separator: " ")
+            .map(\.capitalized)
+            .joined(separator: "")
+        let first = result.substring(from: 0, to: 1)
+        let rest = result.substring(from: 1)
+        return first.lowercased() + rest
+    }
+    
+    var snakeCased: String {
+        self.lowercased()
+            .replacingOccurrences(of: " ", with: "_")
+    }
+    
+    var unsnakeCased: String {
+        self.replacingOccurrences(of: "_", with: " ")
+    }
+    
+    func matches(_ other: String) -> Bool {
+        self.lowercased().replacingOccurrences(of: " ", with: "") == other.lowercased().replacingOccurrences(of: " ", with: "")
     }
 }

@@ -154,7 +154,8 @@ extension Array: ValueDefaulting {
 
 extension Array: DataConvertible where Element: DataConvertible & FixedByteLength {
     public var rawData: GoDData {
-        let data = GoDData()
+        let order: ByteOrder = Element.byteLength < Environment.wordSize ? .unspecified : Environment.byteOrder
+        let data = GoDData(byteOrder: order)
         for value in self {
             data.append(value)
         }

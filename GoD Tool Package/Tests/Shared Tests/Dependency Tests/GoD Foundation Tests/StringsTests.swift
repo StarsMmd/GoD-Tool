@@ -138,4 +138,21 @@ class StringsTests: XCTestCase {
         XCTAssertFalse(sut9.isHexInteger)
         XCTAssertNil(sut9.hexValue())
     }
+    
+    func testCamelCase() {
+        let sut1 = "hello"
+        let sut2 = "Hello"
+        let sut3 = "hello world"
+        let sut4 = "Hello world"
+        let sut5 = "hello new world"
+        let sut6 = "hello world 10"
+        let sut7 = "hello world10"
+        XCTAssertEqual(sut1.camelCased, "hello")
+        XCTAssertEqual(sut2.camelCased, "hello")
+        XCTAssertEqual(sut3.camelCased, "helloWorld")
+        XCTAssertEqual(sut4.camelCased, "helloWorld")
+        XCTAssertEqual(sut5.camelCased, "helloNewWorld")
+        XCTAssertEqual(sut6.camelCased, "helloWorld10")
+        XCTAssertEqual(sut7.camelCased, "helloWorld10")
+    }
 }

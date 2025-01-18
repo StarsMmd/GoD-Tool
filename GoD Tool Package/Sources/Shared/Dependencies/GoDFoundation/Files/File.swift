@@ -37,3 +37,9 @@ extension File: Comparable {
         return lhs.path < rhs.path
     }
 }
+
+extension File: Codable {
+    enum CodingKeys: String, CodingKey {
+        case path
+    }
+}

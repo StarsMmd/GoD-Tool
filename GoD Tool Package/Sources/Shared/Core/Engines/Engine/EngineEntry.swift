@@ -17,4 +17,13 @@ public class EngineEntry<T: Codable>: Codable {
         self.name = name
         self.values = values
     }
+    
+    public func match(_ matchKey: String) -> EntryType? {
+        for (key, value) in values {
+            if key.matches(matchKey) {
+                return value
+            }
+        }
+        return nil
+    }
 }

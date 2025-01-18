@@ -33,7 +33,8 @@ public final class GamecubeISO: FileSystemTree, FileFormat {
     }
     
     public func writeFile(_ file: GoDData, at path: File, overwrite: Bool) -> Bool {
-        fst.writeFile(file, at: path, overwrite: overwrite)
+        file.setByteOrder(.big)
+        return fst.writeFile(file, at: path, overwrite: overwrite)
     }
     
     public func deleteFile(at path: File) -> Bool {
@@ -58,6 +59,7 @@ public final class GamecubeISO: FileSystemTree, FileFormat {
     
     public init(data: GoDData, engine: Engine) throws {
         self.engine = engine
+        data.setByteOrder(.big)
         
         // Create root folders
         fst.createFolder(at: systemFolder, overwrite: true)
@@ -141,6 +143,11 @@ public final class GamecubeISO: FileSystemTree, FileFormat {
                   let fileData = data.read(atAddress: offset + userSectionOffset, length: size)  else { return }
             fst.writeFile(fileData, at: file, overwrite: true)
         }
+    }
+    
+    public init(fst: FileSystemTree, rootFolder: Folder, engine: Engine) {
+        self.engine = engine
+        importFST(fst, from: rootFolder, to: Folder("/"), overwrite: true)
     }
     
     public var data: GoDData {

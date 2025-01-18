@@ -3,6 +3,6 @@ import GoDEngine
 import Structs
 
 enum EnumEntries {
-    static let entries: [EngineEntry<EnumDefinition>] = [
+    static let entries: [EngineEntry<Enum>] = [
     ]
 }

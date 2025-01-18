@@ -13,7 +13,7 @@ public enum EngineError: Error, CustomStringConvertible {
     public var description: String {
         switch self {
         case .MissingConfig(let key, let type, let engine):
-            return "Error: Couldn't find config value '\(key)' or type '\(type.self)' in engine '\(engine.name)'"
+            return "Error: Couldn't find config value '\(key)' of type '\(type.self)' in engine '\(engine.name)'"
         }
     }
 }

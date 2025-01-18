@@ -17,6 +17,20 @@ public protocol ExpressibleByInteger {
 
 public typealias IntegerRepresentable = IntegerConvertible & ExpressibleByInteger
 
+extension Int64: IntegerRepresentable {
+    public var asInt: Int { Int(self) }
+    public init(integer: Int) {
+        self =  Int64(integer)
+    }
+}
+
+extension UInt64: IntegerRepresentable {
+    public var asInt: Int { Int(self) }
+    public init(integer: Int) {
+        self = UInt64(bitPattern: Int64(integer))
+    }
+}
+
 extension Int32: IntegerRepresentable {
     public var asInt: Int { Int(self) }
     public init(integer: Int) {

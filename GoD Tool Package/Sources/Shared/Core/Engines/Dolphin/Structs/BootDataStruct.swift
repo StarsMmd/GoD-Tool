@@ -8,7 +8,7 @@
 import Foundation
 import Structs
 
-let bootDataStruct = StructDefinition(
+let bootDataStruct = StructMap(
     name: "ISO Boot Data",
     wordSize: 4,
     alignmentStyle: .cStyle,

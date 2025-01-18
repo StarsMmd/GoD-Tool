@@ -8,7 +8,7 @@
 import Foundation
 import Structs
 
-let apploaderHeaderStruct = StructDefinition(
+let apploaderHeaderStruct = StructMap(
     name: "Apploader Header",
     wordSize: 4,
     alignmentStyle: .cStyle,

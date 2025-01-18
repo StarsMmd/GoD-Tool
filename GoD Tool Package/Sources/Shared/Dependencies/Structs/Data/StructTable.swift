@@ -15,7 +15,7 @@ public struct StructTableDefinition {
     public let definition: StructDefinition
 }
 
-public class StructTableData: Codable {
+public class StructTableData {
 
     public let definition: StructDefinition
     public let data: GoDData

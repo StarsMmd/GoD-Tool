@@ -62,6 +62,8 @@ public class InMemoryFST: FileSystemTree {
     
     public func inspectFolder(at path: Folder) -> FolderMetaData? {
         let keys = fst.keys.filter { $0.startsWith(path.path) && $0 != path.path }
+        guard keys.count > 0 else { return nil }
+        
         var totalSize = 0
         let contents: [FolderMetaData.Item] = keys.compactMap { subpath in
             let file = File(subpath)

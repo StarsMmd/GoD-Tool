@@ -106,11 +106,4 @@ class StructPropertyTests: XCTestCase {
 
         XCTAssertEqual(sut.length, structDef.length * 3)
     }
-
-    func testAbstractionLength() {
-        IntegerProperties.allCases.forEach { prop in
-            let abstraction = StructProperty.abstraction(enum: weekEnum, property: prop)
-            XCTAssertEqual(prop.length, abstraction.length)
-        }
-    }
 }

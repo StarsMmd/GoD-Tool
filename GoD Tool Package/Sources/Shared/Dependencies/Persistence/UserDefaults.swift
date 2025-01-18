@@ -5,7 +5,6 @@
 //  Created by Stars Momodu on 12/06/2022.
 //
 
-import Foundation
 import GoDFoundation
 
 @propertyWrapper

@@ -24,10 +24,6 @@ let package = Package(
             targets: ["GoD Tool CLI"]
         ),
         .executable(
-            name: "GoD Tool Script",
-            targets: ["GoD Tool Script"]
-        ),
-        .executable(
             name: "Discord Plays Orre",
             targets: ["Discord Plays Orre"]
         ),
@@ -35,21 +31,9 @@ let package = Package(
         // MARK: - Base Library Products
         
         .library(
-            name: "BaseRebuilder",
-            targets: ["BaseRebuilder"]
-        ),
-        .library(
             name: "BaseApp",
             targets: ["BaseApp"]
         ),
-        .library(
-            name: "BaseCLI",
-            targets: ["BaseCLI"]
-        ),
-        .library(
-            name: "BaseScript",
-            targets: ["BaseScript"]
-        )
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -62,7 +46,12 @@ let package = Package(
         .executableTarget(
             name: "GODDESS",
             dependencies: [
-                "BaseRebuilder"
+                "GoDEngine",
+                "GameCube",
+                "Dolphin",
+                "XD",
+                "Colosseum",
+                "GoDFoundation"
             ],
             path: "Sources/Products/GODSDK"
         ),
@@ -76,16 +65,13 @@ let package = Package(
         .executableTarget(
             name: "GoD Tool CLI",
             dependencies: [
-                "BaseCLI",
+                "GoDFoundation",
+                "GoDEngine",
+                "GameCube",
+                "GoDCLI",
+                "Persistence"
             ],
             path: "Sources/Products/GoD Tool CLI"
-        ),
-        .executableTarget(
-            name: "GoD Tool Script",
-            dependencies: [
-                "BaseScript",
-            ],
-            path: "Sources/Products/GoD Tool Script"
         ),
         .executableTarget(
             name: "Discord Plays Orre",
@@ -97,50 +83,15 @@ let package = Package(
         // MARK: - Base Library Targets
         
         .target(
-            name: "BaseRebuilder",
-            dependencies: [
-                "GoDEngine",
-                "GameCube",
-                "Dolphin",
-                "GoDFoundation",
-                "Config"
-            ],
-            path: "Sources/Base/Rebuilder",
-            resources: []
-        ),
-        .target(
             name: "BaseApp",
             dependencies: [
                 "GoDEngine",
                 "GameCube",
                 "GoDFoundation",
                 "GoDGUI",
-                "Config"
+                "Persistence"
             ],
             path: "Sources/Base/App",
-            resources: []
-        ),
-        .target(
-            name: "BaseCLI",
-            dependencies: [
-                "GoDFoundation",
-                "GoDEngine",
-                "GameCube",
-                "GoDCLI",
-                "Config"
-            ],
-            path: "Sources/Base/CLI",
-            resources: []
-        ),
-        .target(
-            name: "BaseScript",
-            dependencies: [
-                "GoDFoundation",
-                "GoDEngine",
-                "GameCube",
-                "Config"
-            ],
-            path: "Sources/Base/Script",
             resources: []
         ),
         
@@ -158,7 +109,7 @@ let package = Package(
             name: "GoDCLI",
             dependencies: [
                 "GoDFoundation",
-                "Config"
+                "Persistence"
             ],
             path: "Sources/Shared/Core/Contexts/CLI",
             resources: [.process("Resources")]
@@ -263,11 +214,11 @@ let package = Package(
         
         // MARK: - Feature Library Targets
         .target(
-            name: "Config",
+            name: "Persistence",
             dependencies: [
                 "GoDFoundation",
             ],
-            path: "Sources/Shared/Dependencies/Config",
+            path: "Sources/Shared/Dependencies/Persistence",
             resources: []
         ),
         

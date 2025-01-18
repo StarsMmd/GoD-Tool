@@ -48,10 +48,10 @@ public protocol FileSystemTree {
 
 public extension FileSystemTree {
     func itemExists(at path: PathRepresentable) -> Bool {
-        if let filePath =  path as? File {
+        if let filePath = path as? File {
             return inspectFile(at: filePath) != nil
         }
-        if let folderPath =  path as? Folder {
+        if let folderPath = path as? Folder {
             return inspectFolder(at: folderPath) != nil
         }
         return false
@@ -72,5 +72,45 @@ public extension FileSystemTree {
     var root: FolderMetaData {
         let rootFolder = Folder("/")
         return inspectFolder(at: rootFolder) ?? .init(name: "/", contents: [], size: nil, notes: nil)
+    }
+    
+    func importFST(
+        _ fileSystem: FileSystemTree,
+        from rootFolder: Folder,
+        to targetFolder: Folder,
+        overwrite: Bool
+    ) {
+        func add(_ item: FolderMetaData.Item) {
+            switch item {
+            case .file(let file):
+                guard let data = fileSystem.readFile(at: file) else { return }
+                var newFile = file
+                if file.path.startsWith(rootFolder.path) {
+                    let relativePath = file.path.substring(from: rootFolder.path.count)
+                    newFile = targetFolder.file(relativePath)
+                }
+                _ = writeFile(data, at: newFile, overwrite: overwrite)
+            case .folder(let folder):
+                guard let contents = fileSystem.inspectFolder(at: folder)?.contents else { return }
+                var newFolder = folder
+                if folder.path.startsWith(rootFolder.path) {
+                    let relativePath = folder.path.substring(from: rootFolder.path.count)
+                    newFolder = targetFolder.folder(relativePath)
+                }
+                _ = createFolder(at: newFolder, overwrite: overwrite)
+                add(contents)
+            }
+        }
+        
+        func add(_ items: [FolderMetaData.Item]) {
+            items.forEach { item in
+                add(item)
+            }
+        }
+        
+        guard let rootContents = fileSystem.inspectFolder(at: rootFolder)?.contents else {
+            return
+        }
+        add(rootContents)
     }
 }

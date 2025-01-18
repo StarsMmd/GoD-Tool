@@ -51,6 +51,9 @@ class GoDFolderTests: XCTestCase {
         
         let sut2 = folder.file("directory/file name.ext")
         XCTAssertEqual(sut2.path, "/testFolderTemp/sub folder/directory/file name.ext")
+        
+        let sut3 = folder.file(File("directory/file name.ext"))
+        XCTAssertEqual(sut3.path, "/testFolderTemp/sub folder/directory/file name.ext")
     }
     
     func testFolderVar() {
@@ -60,6 +63,9 @@ class GoDFolderTests: XCTestCase {
         
         let sut2 = folder.folder("directory/folder name")
         XCTAssertEqual(sut2.path, "/testFolderTemp/sub folder/directory/folder name")
+        
+        let sut3 = folder.folder(Folder("directory/folder name"))
+        XCTAssertEqual(sut3.path, "/testFolderTemp/sub folder/directory/folder name")
     }
     
     func testParent() {
